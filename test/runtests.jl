@@ -1,5 +1,9 @@
-using ConjugatePriors
-using Base.Test
+tests = ["conjugates",
+         "conjugates_normal",
+         "conjugates_mvnormal"]
 
-# write your own tests here
-@test 1 == 1
+for t in tests
+    fpath = "$t.jl"
+    println("running $fpath ...")
+    include(fpath)
+end
