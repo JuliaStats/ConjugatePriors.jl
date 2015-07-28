@@ -2,6 +2,8 @@ using Base.Test
 using Distributions
 using ConjugatePriors
 
+import ConjugatePriors: posterior, posterior_rand, posterior_mode, posterior_randmodel, fit_map
+
 n = 100
 w = rand(100)
 

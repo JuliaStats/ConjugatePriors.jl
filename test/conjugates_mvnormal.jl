@@ -4,6 +4,8 @@ using Distributions
 using ConjugatePriors
 using Base.Test
 
+import ConjugatePriors: NormalWishart, NormalInverseWishart
+
 # MvNormal -- Normal (known covariance)
 
 n = 3
