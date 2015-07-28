@@ -17,8 +17,8 @@ function posterior_canon(
     G::Type{MvNormal},
     x::Matrix)
 
-	μpri::Pri, Σ::Cov = prior
-	posterior_canon(μpri, suffstats(MvNormalKnownCov{Cov}(Σ), x))
+    μpri, Σ = prior
+    posterior_canon(μpri, suffstats(MvNormalKnownCov(Σ), x))
 end
 
 function posterior_canon(
@@ -26,8 +26,8 @@ function posterior_canon(
     G::Type{MvNormal},
     x::Matrix, w::Array{Float64})
 
-    μpri::Pri, Σ::Cov = prior
-    posterior_canon(μpri, suffstats(MvNormalKnownSigma{Cov}(Σ), x, w))
+    μpri, Σ = prior
+    posterior_canon(μpri, suffstats(MvNormalKnownSigma(Σ), x, w))
 end
 
 function posterior(
