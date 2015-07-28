@@ -5,21 +5,32 @@ using PDMats
 using Distributions
 
 import Base.LinAlg: Cholesky
-import Distributions:
-    IncompleteFormulation,
-    BinomData,
-    CategoricalData,
+import Base: scale
 
+import Distributions:
     BernoulliStats,
+    BinomData,
     BinomialStats,
+    CategoricalData,
     CategoricalStats,
-    MultinomialStats,
+    DirichletCanon,
     ExponentialStats,
+    IncompleteFormulation,
+    MultinomialStats,
+    MvNormalStats,
+    MvNormalKnownCovStats,
     NormalStats,
+    NormalKnownSigma,
+    NormalKnownMu,
     NormalKnownSigmaStats,
     NormalKnownMuStats,
-    MvNormalStats,
-    MvNormalKnownCovStats
+
+    add!,
+    add_categorical_counts!,
+    shape,
+    rate,
+    mode,
+    rand
 
 include("fallbacks.jl")
 include("beta_binom.jl")
