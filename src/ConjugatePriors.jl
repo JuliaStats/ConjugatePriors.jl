@@ -5,7 +5,7 @@ using PDMats
 using Distributions
 
 import Base.LinAlg: Cholesky
-import Base: scale
+import Base: scale, mean
 
 import Distributions:
     BernoulliStats,
@@ -30,7 +30,9 @@ import Distributions:
     shape,
     rate,
     mode,
-    rand
+    rand,
+    pdf,
+    logpdf
 
 include("fallbacks.jl")
 include("beta_binom.jl")
