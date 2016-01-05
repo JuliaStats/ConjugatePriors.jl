@@ -38,7 +38,8 @@ export
     NormalGamma,
     NormalWishart,
     NormalInverseGamma,
-    NormalInverseWishart
+    NormalInverseWishart,
+    posterior
 
 include("fallbacks.jl")
 include("beta_binom.jl")
