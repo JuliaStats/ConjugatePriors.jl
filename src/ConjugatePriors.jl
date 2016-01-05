@@ -33,6 +33,12 @@ import Distributions:
     rand,
     pdf,
     logpdf
+    
+export
+    NormalGamma,
+    NormalWishart,
+    NormalInverseGamma,
+    NormalInverseWishart
 
 include("fallbacks.jl")
 include("beta_binom.jl")
