@@ -39,7 +39,11 @@ export
     NormalWishart,
     NormalInverseGamma,
     NormalInverseWishart,
-    posterior
+    posterior, 
+    posterior_rand, 
+    posterior_mode, 
+    posterior_randmodel, 
+    fit_map
 
 include("fallbacks.jl")
 include("beta_binom.jl")
