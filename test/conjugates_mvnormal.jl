@@ -42,7 +42,7 @@ X = rand(MultivariateNormal(mu_true, Sig_true), n)
 pri = MultivariateNormal(mu0, Sig0)
 
 post = posterior((pri, Sig_true), MvNormal, X)
-@test isa(post,MvNormal{PDMats.PDMat{Float64,Array{Float64,2}}})
+@test isa(post.μ,Vector) && isa(post.Σ,PDMats.PDMat)
 
 @test_approx_eq post.μ inv(inv(Sig0) + n*inv(Sig_true))*(n*inv(Sig_true)*mean(X,2) + inv(Sig0)*mu0)
 @test_approx_eq post.Σ.mat inv(inv(Sig0) + n*inv(Sig_true))
@@ -51,7 +51,7 @@ post = posterior((pri, Sig_true), MvNormal, X)
 
 ps = posterior_randmodel((pri, Sig_true), MvNormal, X)
 
-@test isa(ps,MvNormal{PDMats.PDMat{Float64,Array{Float64,2}}})
+@test isa(ps.μ,Vector) && isa(ps.Σ,PDMats.PDMat)
 @test insupport(ps, ps.μ)
 @test insupport(InverseWishart, ps.Σ.mat)
 
