@@ -1,15 +1,16 @@
 language: julia
 os:
-  - linux
   - osx
+  - linux
 julia:
-  - 0.3
   - 0.4
   - 0.5
   - nightly
 notifications:
   email: false
-# uncomment the following lines to override the default test script
-#script:
+#script: # the default script is equivalent to the following
 #  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-#  - julia --check-bounds=yes -e 'Pkg.clone(pwd()); Pkg.build("ConjugatePriors"); Pkg.test("ConjugatePriors"; coverage=true)'
+#  - julia -e 'Pkg.clone(pwd()); Pkg.build("ConjugatePriors"); Pkg.test("ConjugatePriors"; coverage=true)';
+after_success:
+  - julia -e 'cd(Pkg.dir("ConjugatePriors")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(Coveralls.process_folder())';
+#  - julia -e 'cd(Pkg.dir("ConjugatePriors")); Pkg.add("Coverage"); using Coverage; Codecov.submit(Codecov.process_folder())';
