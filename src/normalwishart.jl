@@ -3,16 +3,15 @@
 # a reference.  Note that there were some typos in that document so the code
 # here may not correspond exactly.
 
-immutable NormalWishart <: Distribution
+immutable NormalWishart{T} <: ContinuousMultivariateDistribution where T<:Real
     dim::Int
     zeromean::Bool
-    mu::Vector{Float64}
-    kappa::Float64
-    Tchol::Cholesky{Float64}  # Precision matrix (well, sqrt of one)
-    nu::Float64
-
-    function NormalWishart(mu::Vector{Float64}, kappa::Real,
-                                  Tchol::Cholesky{Float64}, nu::Real)
+    mu::Vector{T}
+    kappa::T
+    Tchol::Cholesky{T}  # Precision matrix (well, sqrt of one)
+    nu::T
+    function NormalWishart{T}(mu::Vector{T}, kappa::T,
+                                  Tchol::Cholesky{T}, nu::T) where T<:Real
         # Probably should put some error checking in here
         d = length(mu)
         zmean::Bool = true
@@ -22,16 +21,16 @@ immutable NormalWishart <: Distribution
                 break
             end
         end
-        @compat new(d, zmean, mu, Float64(kappa), Tchol, Float64(nu))
+        @compat new(d, zmean, mu, kappa, Tchol, nu)
     end
 end
 
-function NormalWishart(mu::Vector{Float64}, kappa::Real,
-                       T::Matrix{Float64}, nu::Real)
-    NormalWishart(mu, kappa, cholfact(T), nu)
+function NormalWishart(mu::Vector{T}, kappa::T,
+                       M::Matrix{T}, nu::T) where T<:Real
+    NormalWishart(mu, kappa, cholfact(M), nu)
 end
 
-function insupport(::Type{NormalWishart}, x::Vector{Float64}, Lam::Matrix{Float64})
+function insupport(::Type{NormalWishart}, x::Vector{T}, Lam::Matrix{S}) where T<:Real where S<:Real
     return (all(isfinite(x)) &&
            size(Lam, 1) == size(Lam, 2) &&
            isApproxSymmmetric(Lam) &&
@@ -39,10 +38,10 @@ function insupport(::Type{NormalWishart}, x::Vector{Float64}, Lam::Matrix{Float6
            hasCholesky(Lam))
 end
 
-pdf(nw::NormalWishart, x::Vector{Float64}, Lam::Matrix{Float64}) =
+pdf(nw::NormalWishart, x::Vector{T}, Lam::Matrix{S}) where T<:Real where S<:Real =
         exp(logpdf(nw, x, Lam))
 
-function logpdf(nw::NormalWishart, x::Vector{Float64}, Lam::Matrix{Float64})
+function logpdf(nw::NormalWishart, x::Vector{T}, Lam::Matrix{T}) where T<:Real
     if !insupport(NormalWishart, x, Lam)
         return -Inf
     else
@@ -56,7 +55,7 @@ function logpdf(nw::NormalWishart, x::Vector{Float64}, Lam::Matrix{Float64})
         hp = 0.5 * p
 
         # Normalization
-        @compat logp::Float64 = hp*(log(kappa) - Float64(log2π))
+        logp = hp*(log(kappa) - Float64(log2π))
         logp -= hnu * logdet(Tchol)
         logp -= hnu * p * log(2.)
         logp -= lpgamma(p, hnu)

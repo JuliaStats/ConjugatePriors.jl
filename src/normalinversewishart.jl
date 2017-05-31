@@ -3,7 +3,7 @@
 # a reference.  Note that there were some typos in that document so the code
 # here may not correspond exactly.
 
-immutable NormalInverseWishart <: Distribution
+immutable NormalInverseWishart{T} <: ContinuousMultivariateDistribution where T<:Real
     dim::Int
     zeromean::Bool
     mu::Vector{Float64}

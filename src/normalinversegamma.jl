@@ -14,6 +14,9 @@ immutable NormalInverseGamma{T} <: ContinuousUnivariateDistribution where T<:Rea
     end
 end
 
+NormalInverseGamma(mu::T, v0::T, sh::T, r::T) where T<:Real =
+  NormalInverseGamma{T}(mu,v0,sh,r)
+
 mu(d::NormalInverseGamma) = d.mu
 v0(d::NormalInverseGamma) = d.v0
 shape(d::NormalInverseGamma) = d.shape
