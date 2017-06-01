@@ -3,7 +3,7 @@
 # a reference.  Note that there were some typos in that document so the code
 # here may not correspond exactly.
 
-immutable NormalInverseWishart{T} <: ContinuousMultivariateDistribution where T<:Real
+struct NormalInverseWishart{T} <: ContinuousMultivariateDistribution where T<:Real
     dim::Int
     zeromean::Bool
     mu::Vector{T}
@@ -14,13 +14,7 @@ immutable NormalInverseWishart{T} <: ContinuousMultivariateDistribution where T<
                                   Lamchol::Cholesky{T,Matrix{T}}, nu::T) where T<:Real
         # Probably should put some error checking in here
         d = length(mu)
-        zmean::Bool = true
-        for i = 1:d
-            if mu[i] != 0.
-                zmean = false
-                break
-            end
-        end
+        zmean = all(mu .== zero(T))
         new(d, zmean, mu, kappa, Lamchol, nu)
     end
 end

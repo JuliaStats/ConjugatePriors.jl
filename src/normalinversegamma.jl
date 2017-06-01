@@ -3,13 +3,13 @@
 # a reference.  Note that there were some typos in that document so the code
 # here may not correspond exactly.
 
-immutable NormalInverseGamma{T} <: ContinuousUnivariateDistribution where T<:Real
+struct NormalInverseGamma{T} <: ContinuousUnivariateDistribution where T<:Real
     mu::T
     v0::T     # scales variance of Normal
     shape::T  
     scale::T
     function NormalInverseGamma{T}(mu::T, v0::T, sh::T, r::T) where T<:Real
-    	v0 > zero(v0) && sh > zero(sh) && r > zero(r) || error("Both shape and scale must be positive")
+    	v0 > zero(T) && sh > zero(T) && r > zero(T) || error("Both shape and scale must be positive")
     	new(mu, v0, sh, r)
     end
 end

@@ -3,13 +3,13 @@
 # a reference.  Note that there were some typos in that document so the code
 # here may not correspond exactly.
 
-immutable NormalGamma{T} <: ContinuousUnivariateDistribution where T<:Real 
+struct NormalGamma{T} <: ContinuousUnivariateDistribution where T<:Real 
     mu::T
     nu::T     # scales precision of Normal
     shape::T  
     rate::T
     function NormalGamma{T}(mu::T, nu::T, sh::T, r::T) where T<:Real
-    	nu > zero(nu) && sh > zero(sh) && r > zero(r) || error("Both shape and scale must be positive")
+    	nu > zero(T) && sh > zero(T) && r > zero(T) || error("Both shape and scale must be positive")
     	new(mu, nu, sh, r)
     end
 end
