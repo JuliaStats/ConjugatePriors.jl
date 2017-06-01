@@ -8,10 +8,10 @@ immutable NormalWishart{T} <: ContinuousMultivariateDistribution where T<:Real
     zeromean::Bool
     mu::Vector{T}
     kappa::T
-    Tchol::Cholesky{T}  # Precision matrix (well, sqrt of one)
+    Tchol::Cholesky{T,Matrix{T}}  # Precision matrix (well, sqrt of one)
     nu::T
     function NormalWishart{T}(mu::Vector{T}, kappa::T,
-                                  Tchol::Cholesky{T}, nu::T) where T<:Real
+                                  Tchol::Cholesky{T,Matrix{T}}, nu::T) where T<:Real
         # Probably should put some error checking in here
         d = length(mu)
         zmean::Bool = true
@@ -26,8 +26,13 @@ immutable NormalWishart{T} <: ContinuousMultivariateDistribution where T<:Real
 end
 
 function NormalWishart(mu::Vector{T}, kappa::T,
+                       M::Cholesky{T,Matrix{T}}, nu::T) where T<:Real
+    NormalWishart{T}(mu, kappa, M, nu)
+end
+
+function NormalWishart(mu::Vector{T}, kappa::T,
                        M::Matrix{T}, nu::T) where T<:Real
-    NormalWishart(mu, kappa, cholfact(M), nu)
+    NormalWishart{T}(mu, kappa, cholfact(M), nu)
 end
 
 function insupport(::Type{NormalWishart}, x::Vector{T}, Lam::Matrix{S}) where T<:Real where S<:Real

@@ -50,7 +50,7 @@ x = rand(Normal(2.0, 3.0), n)
 p = posterior((2.0, pri), Normal, x)
 @test isa(p, InverseGamma)
 @test shape(p) ≈ shape(pri) + n / 2
-@test scale(p) ≈ scale(pri) + sum(abs2(x .- 2.0)) / 2
+@test scale(p) ≈ scale(pri) + sum(abs2.(x .- 2.0)) / 2
 
 r = posterior_mode((2.0, pri), Normal, x)
 @test r ≈ mode(p)
@@ -63,7 +63,7 @@ f = fit_map((2.0, pri), Normal, x)
 p = posterior((2.0, pri), Normal, x, w)
 @test isa(p, InverseGamma)
 @test shape(p) ≈ shape(pri) + sum(w) / 2
-@test scale(p) ≈ scale(pri) + dot(w, abs2(x .- 2.0)) / 2
+@test scale(p) ≈ scale(pri) + dot(w, abs2.(x .- 2.0)) / 2
 
 r = posterior_mode((2.0, pri), Normal, x, w)
 @test r ≈ mode(p)
@@ -82,7 +82,7 @@ x = rand(Normal(2.0, 3.0), n)
 p = posterior((2.0, pri), Normal, x)
 @test isa(p, Gamma)
 @test shape(p) ≈ shape(pri) + n / 2
-@test scale(p) ≈ scale(pri) + sum(abs2(x .- 2.0)) / 2
+@test scale(p) ≈ scale(pri) + sum(abs2.(x .- 2.0)) / 2
 
 r = posterior_mode((2.0, pri), Normal, x)
 @test r ≈ mode(p)
@@ -95,7 +95,7 @@ f = fit_map((2.0, pri), Normal, x)
 p = posterior((2.0, pri), Normal, x, w)
 @test isa(p, Gamma)
 @test shape(p) ≈ shape(pri) + sum(w) / 2
-@test scale(p) ≈ scale(pri) + dot(w, abs2(x .- 2.0)) / 2
+@test scale(p) ≈ scale(pri) + dot(w, abs2.(x .- 2.0)) / 2
 
 r = posterior_mode((2.0, pri), Normal, x, w)
 @test r ≈ mode(p)

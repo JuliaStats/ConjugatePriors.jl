@@ -6,13 +6,12 @@
 immutable NormalInverseWishart{T} <: ContinuousMultivariateDistribution where T<:Real
     dim::Int
     zeromean::Bool
-    mu::Vector{Float64}
-    kappa::Float64              # This scales precision (inverse covariance)
-    Lamchol::Cholesky{Float64}  # Covariance matrix (well, sqrt of one)
-    nu::Float64
-
-    function NormalInverseWishart(mu::Vector{Float64}, kappa::Real,
-                                  Lamchol::Cholesky{Float64}, nu::Real)
+    mu::Vector{T}
+    kappa::T              # This scales precision (inverse covariance)
+    Lamchol::Cholesky{T,Matrix{T}}  # Covariance matrix (well, sqrt of one)
+    nu::T
+    function NormalInverseWishart{T}(mu::Vector{T}, kappa::T,
+                                  Lamchol::Cholesky{T,Matrix{T}}, nu::T) where T<:Real
         # Probably should put some error checking in here
         d = length(mu)
         zmean::Bool = true
@@ -22,13 +21,18 @@ immutable NormalInverseWishart{T} <: ContinuousMultivariateDistribution where T<
                 break
             end
         end
-        @compat new(d, zmean, mu, Float64(kappa), Lamchol, Float64(nu))
+        new(d, zmean, mu, kappa, Lamchol, nu)
     end
 end
 
-function NormalInverseWishart(mu::Vector{Float64}, kappa::Real,
-                              Lambda::Matrix{Float64}, nu::Real)
-    NormalInverseWishart(mu, kappa, cholfact(Lambda), nu)
+function NormalInverseWishart(mu::Vector{T}, kappa::T,
+                              M::Cholesky{T,Matrix{T}}, nu::T) where T<:Real
+    NormalInverseWishart{T}(mu, kappa, M, nu)
+end
+
+function NormalInverseWishart(mu::Vector{T}, kappa::T,
+                              Lambda::Matrix{T}, nu::T) where T<:Real
+    NormalInverseWishart{T}(mu, kappa, cholfact(Lambda), nu)
 end
 
 function insupport(::Type{NormalInverseWishart}, x::Vector{Float64}, Sig::Matrix{Float64})
