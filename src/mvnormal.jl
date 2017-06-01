@@ -2,7 +2,7 @@
 
 #### Generic MvNormal -- Generic MvNormal (Σ is known)
 
-typealias MvNormalWithCov{Pri<:MvNormal, Cov<:AbstractPDMat} Tuple{Pri,Cov}
+const MvNormalWithCov{Pri<:MvNormal, Cov<:AbstractPDMat} = Tuple{Pri,Cov}
 
 function posterior_canon(prior::MvNormal, ss::MvNormalKnownCovStats)
     invΣ0 = inv(prior.Σ)
@@ -54,7 +54,7 @@ function complete(
     MvNormal(μ, pri[2]::Cov)
 end
 
-typealias MvNormalWithCovMat{Pri<:MvNormal} Tuple{MvNormal, Matrix{Float64}}
+const MvNormalWithCovMat{Pri<:MvNormal} = Tuple{MvNormal, Matrix{Float64}}
 
 function posterior_canon(pri::MvNormalWithCovMat, G::Type{MvNormal}, args...)
     μpri::MvNormal, Σmat::Matrix{Float64} = pri
@@ -90,7 +90,7 @@ function posterior_canon(prior::NormalInverseWishart, ss::MvNormalStats)
     return NormalInverseWishart(mu, kappa, cholfact(Lam), nu)
 end
 
-typealias MeanAndCovMat Tuple{Vector{Float64}, Matrix{Float64}}
+const MeanAndCovMat = Tuple{Vector{Float64}, Matrix{Float64}}
 complete(G::Type{MvNormal}, pri::NormalInverseWishart, s::MeanAndCovMat) = MvNormal(s...)
 
 

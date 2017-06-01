@@ -15,7 +15,7 @@ function posterior_canon(pri::Normal, ss::NormalKnownSigmaStats)
 	NormalCanon(h, prec)
 end
 
-typealias NormalWithFloat64 Tuple{Normal, Float64}
+const NormalWithFloat64 = Tuple{Normal, Float64}
 
 function posterior_canon(pri::NormalWithFloat64, G::Type{Normal}, x::Array)
 	μpri::Normal, σ::Float64 = pri
@@ -40,7 +40,7 @@ complete(G::Type{Normal}, pri::NormalWithFloat64, μ::Float64) = Normal(μ, pri[
 
 #### InverseGamma on σ^2 (with μ known)
 
-typealias Float64WithInverseGamma Tuple{Float64, InverseGamma}
+const Float64WithInverseGamma = Tuple{Float64, InverseGamma}
 
 function posterior_canon(pri::InverseGamma, ss::NormalKnownMuStats)
 	α1 = shape(pri) + 0.5 * ss.tw
@@ -66,7 +66,7 @@ complete(G::Type{Normal}, pri::Float64WithInverseGamma, σ2::Float64) = Normal(p
 
 #### Gamma on precision σ^(-2) (with μ known)
 
-typealias Float64WithGamma Tuple{Float64, Gamma}
+const Float64WithGamma = Tuple{Float64, Gamma}
 
 function posterior_canon(pri::Gamma, ss::NormalKnownMuStats)
 	α1 = shape(pri) + 0.5 * ss.tw
