@@ -21,7 +21,7 @@ immutable NormalWishart{T} <: ContinuousMultivariateDistribution where T<:Real
                 break
             end
         end
-        @compat new(d, zmean, mu, kappa, Tchol, nu)
+        return new(d, zmean, mu, kappa, Tchol, nu)
     end
 end
 
