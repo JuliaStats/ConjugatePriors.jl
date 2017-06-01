@@ -1,7 +1,5 @@
-# tests = ["conjugates",
-#          "conjugates_normal",
-#          "conjugates_mvnormal"]
-tests = [
+tests = ["conjugates",
+         "conjugates_normal",
          "conjugates_mvnormal"]
 
 for t in tests
