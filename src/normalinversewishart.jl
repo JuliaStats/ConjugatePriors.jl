@@ -26,9 +26,16 @@ struct NormalInverseWishart{T<:Real} <: ContinuousUnivariateDistribution
     end
 end
 
-function NormalInverseWishart(mu::Vector{T}, kappa::T,
-                              Lambda::Matrix{T}, nu::T) where T<:Real
-    NormalInverseWishart(mu, kappa, cholfact(Lambda), nu)
+function NormalInverseWishart(mu::Vector{U}, kappa::Real,
+                                Lamchol::Cholesky{S}, nu::Real) where {S<:Real, U<:Real}
+    T = promote_type(eltype(mu), typeof(kappa), typeof(nu), S)
+    return NormalInverseWishart{T}(Vector{T}(mu), T(kappa), Cholesky{T}(Lamchol), T(nu))
+end
+
+function NormalInverseWishart(mu::Vector{U}, kappa::Real,
+                              Lambda::Matrix{S}, nu::Real) where {S<:Real, U<:Real}
+    T = promote_type(eltype(mu), typeof(kappa), typeof(nu), S)
+    return NormalInverseWishart{T}(Vector{T}(mu), T(kappa), Cholesky{T}(cholfact(Lambda)), T(nu))
 end
 
 function insupport(::Type{NormalInverseWishart}, x::Vector{T}, Sig::Matrix{T}) where T<:Real
