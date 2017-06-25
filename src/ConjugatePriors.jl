@@ -7,7 +7,7 @@ using PDMats
 using Distributions
 
 import Base.LinAlg: Cholesky
-import Base: scale, mean
+import Distributions: scale, mean
 
 import Distributions:
     BernoulliStats,

@@ -3,15 +3,15 @@
 # a reference.  Note that there were some typos in that document so the code
 # here may not correspond exactly.
 
-immutable NormalInverseGamma <: Distribution
-    mu::Float64
-    v0::Float64     # scales variance of Normal
-    shape::Float64  
-    scale::Float64
+struct NormalInverseGamma{T<:Real} <: ContinuousUnivariateDistribution
+    mu::T
+    v0::T     # scales variance of Normal
+    shape::T  
+    scale::T
 
-    function NormalInverseGamma(mu::Real, v0::Real, sh::Real, r::Real)
+    function NormalInverseGamma{T}(mu::T, v0::T, sh::T, r::T) where T<:Real
     	v0 > zero(v0) && sh > zero(sh) && r > zero(r) || error("Both shape and scale must be positive")
-    	new(mu, v0, sh, r)
+    	new{T}(T(mu), T(v0), T(sh), T(r))
     end
 end
 
