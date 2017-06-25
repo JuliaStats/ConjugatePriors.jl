@@ -1,3 +1,8 @@
 julia 0.6
+<<<<<<< HEAD
 PDMats 0.3.2
 Distributions 0.8.1
+=======
+PDMats
+Distributions
+>>>>>>> 1d2268ff9200b525e1ec99dbe79120d6dcd037a4

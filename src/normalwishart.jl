@@ -45,10 +45,10 @@ function insupport(::Type{NormalWishart}, x::Vector{T}, Lam::Matrix{T}) where T<
            hasCholesky(Lam))
 end
 
-pdf(nw::NormalWishart, x::Vector{Float64}, Lam::Matrix{Float64}) =
+pdf(nw::NormalWishart, x::Vector{T}, Lam::Matrix{S}) where T<:Real where S<:Real =
         exp(logpdf(nw, x, Lam))
 
-function logpdf(nw::NormalWishart, x::Vector{Float64}, Lam::Matrix{Float64})
+function logpdf(nw::NormalWishart, x::Vector{T}, Lam::Matrix{T}) where T<:Real
     if !insupport(NormalWishart, x, Lam)
         return -Inf
     else
@@ -62,7 +62,7 @@ function logpdf(nw::NormalWishart, x::Vector{Float64}, Lam::Matrix{Float64})
         hp = 0.5 * p
 
         # Normalization
-        @compat logp::Float64 = hp*(log(kappa) - Float64(log2π))
+        logp = hp*(log(kappa) - Float64(log2π))
         logp -= hnu * logdet(Tchol)
         logp -= hnu * p * log(2.)
         logp -= lpgamma(p, hnu)

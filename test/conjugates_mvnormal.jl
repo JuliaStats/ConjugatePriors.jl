@@ -4,7 +4,7 @@ using Distributions
 using ConjugatePriors
 using Base.Test
 
-import ConjugatePriors: NormalWishart, NormalInverseWishart
+import ConjugatePriors: posterior, posterior_randmodel, NormalWishart, NormalInverseWishart
 
 # MvNormal -- Normal (known covariance)
 
@@ -30,7 +30,8 @@ wtw_t = sum(w)
 @test ssw.tw ≈ wtw_t
 
 # Posterior
-n = 100
+n = 10
+# n = 100
 mu_true = [2., 3.]
 Sig_true = eye(2)
 Sig_true[1,2] = Sig_true[2,1] = 0.25
@@ -38,7 +39,6 @@ mu0 = [2.5, 2.5]
 Sig0 = eye(2)
 Sig0[1,2] = Sig0[2,1] = 0.5
 X = rand(MultivariateNormal(mu_true, Sig_true), n)
-
 pri = MultivariateNormal(mu0, Sig0)
 
 post = posterior((pri, Sig_true), MvNormal, X)
@@ -50,7 +50,6 @@ post = posterior((pri, Sig_true), MvNormal, X)
 # posterior_sample
 
 ps = posterior_randmodel((pri, Sig_true), MvNormal, X)
-
 @test isa(ps, FullNormal)
 @test insupport(ps, ps.μ)
 @test insupport(InverseWishart, ps.Σ.mat)

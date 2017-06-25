@@ -26,17 +26,17 @@ shape(d::NormalInverseGamma) = d.shape
 scale(d::NormalInverseGamma) = d.scale
 rate(d::NormalInverseGamma) = 1. / d.scale
 
-insupport(::Type{NormalInverseGamma}, x::Real, sig2::Real) = 
+insupport(::Type{NormalInverseGamma}, x::T, sig2::T) where T<:Real = 
     isfinite(x) && zero(sig2) <= sig2 < Inf 
 
 # Probably should guard agains dividing by and taking the log of 0.
 
-function pdf(d::NormalInverseGamma, x::Real, sig2::Real)
+function pdf(d::NormalInverseGamma, x::T, sig2::T) where T<:Real
     Zinv = d.scale.^d.shape / gamma(d.shape) / sqrt(d.v0 * 2.*pi)
     return Zinv * 1./(sqrt(sig2)*sig2.^(d.shape+1.)) * exp(-d.scale/sig2 - 0.5/(sig2*d.v0)*(x-d.mu).^2)
 end
 
-function logpdf(d::NormalInverseGamma, x::Real, sig2::Real)
+function logpdf(d::NormalInverseGamma, x::T, sig2::T) where T<:Real
     lZinv = d.shape*log(d.scale) - lgamma(d.shape) - 0.5*(log(d.v0) + log(2pi))
     return lZinv - 0.5*log(sig2) - (d.shape+1.)*log(sig2) - d.scale/sig2 - 0.5/(sig2*d.v0)*(x-d.mu).^2
 end

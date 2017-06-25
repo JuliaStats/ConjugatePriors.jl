@@ -23,18 +23,18 @@ end
 mu(d::NormalGamma) = d.mu
 nu(d::NormalGamma) = d.nu
 shape(d::NormalGamma) = d.shape
-scale(d::NormalGamma) = 1. / d.rate
+scale(d::NormalGamma{T}) where T = 1. / d.rate
 rate(d::NormalGamma) = d.rate
 
-insupport(::Type{NormalGamma}, x::Real, tau2::Real) = 
+insupport(::Type{NormalGamma}, x::T, tau2::T) where T<:Real = 
     isfinite(x) && zero(tau2) <= tau2 < Inf
 
 # Probably should guard agains dividing by and taking the log of 0.
-function pdf(d::NormalGamma, x::Real, tau2::Real)
+function pdf(d::NormalGamma, x::T, tau2::T) where T<:Real
     Zinv = d.rate.^d.shape / gamma(d.shape) * sqrt(d.nu / (2.*pi))
     return Zinv * tau2.^(d.shape-0.5) * exp(-0.5*tau2*(d.nu*(x-d.mu).^2 + 2.*d.rate))
 end
-function logpdf(d::NormalGamma, x::Real, tau2::Real)
+function logpdf(d::NormalGamma, x::T, tau2::T) where T<:Real
     lZinv = d.shape*log(d.rate) - lgamma(d.shape) + 0.5*(log(d.nu) - log(2.*pi))
     return lZinv + (d.shape-0.5)*log(tau2) - 0.5*tau2*(d.nu*(x-d.mu).^2 + 2*d.rate)
 end

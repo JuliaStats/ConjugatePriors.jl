@@ -34,7 +34,7 @@ function posterior_canon{T<:Real}(pri::Dirichlet, G::Type{Multinomial}, x::Matri
 	d = length(pri)
 	size(x) == (d, length(w)) || throw(ArgumentError("Inconsistent argument dimensions."))
 	a = copy(pri.alpha)
-	@compat Base.LinAlg.BLAS.gemv!('N', 1.0, map(Float64, x), vec(w), 1.0, a)
+	Base.LinAlg.BLAS.gemv!('N', 1.0, map(Float64, x), vec(w), 1.0, a)
 	DirichletCanon(a)
 end
 
