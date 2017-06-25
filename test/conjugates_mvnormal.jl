@@ -23,11 +23,11 @@ ws_t = sum(Xw, 2)
 tw_t = length(w)
 wtw_t = sum(w)
 
-@test_approx_eq ss.sx s_t
-@test_approx_eq ss.tw tw_t
+@test ss.sx ≈ s_t
+@test ss.tw ≈ tw_t
 
-@test_approx_eq ssw.sx ws_t
-@test_approx_eq ssw.tw wtw_t
+@test ssw.sx ≈ ws_t
+@test ssw.tw ≈ wtw_t
 
 # Posterior
 n = 100
@@ -44,8 +44,8 @@ pri = MultivariateNormal(mu0, Sig0)
 post = posterior((pri, Sig_true), MvNormal, X)
 @test isa(post, FullNormal)
 
-@test_approx_eq post.μ inv(inv(Sig0) + n*inv(Sig_true))*(n*inv(Sig_true)*mean(X,2) + inv(Sig0)*mu0)
-@test_approx_eq post.Σ.mat inv(inv(Sig0) + n*inv(Sig_true))
+@test post.μ ≈ inv(inv(Sig0) + n*inv(Sig_true))*(n*inv(Sig_true)*mean(X,2) + inv(Sig0)*mu0)
+@test post.Σ.mat ≈ inv(inv(Sig0) + n*inv(Sig_true))
 
 # posterior_sample
 
@@ -75,10 +75,10 @@ pri = NormalInverseWishart(mu0, kappa0, T0, nu0)
 
 post = posterior(pri, MvNormal, X)
 
-@test_approx_eq post.mu (kappa0*mu0 + n*Xbar)./(kappa0 + n)
-@test_approx_eq post.kappa kappa0 + n
-@test_approx_eq post.nu nu0 + n
-@test_approx_eq (post.Lamchol[:U]'*post.Lamchol[:U]) T0 + A_mul_Bt(Xm, Xm) + kappa0*n/(kappa0+n)*(Xbar-mu0)*(Xbar-mu0)'
+@test post.mu ≈ (kappa0*mu0 + n*Xbar)./(kappa0 + n)
+@test post.kappa ≈ kappa0 + n
+@test post.nu ≈ nu0 + n
+@test (post.Lamchol[:U]'*post.Lamchol[:U]) ≈ T0 + A_mul_Bt(Xm, Xm) + kappa0*n/(kappa0+n)*(Xbar-mu0)*(Xbar-mu0)'
 
 ps = posterior_randmodel(pri, MultivariateNormal, X)
 
@@ -105,10 +105,10 @@ pri = NormalWishart(mu0, kappa0, T0, nu0)
 
 post = posterior(pri, MvNormal, X)
 
-@test_approx_eq post.mu (kappa0*mu0 + n*Xbar)./(kappa0 + n)
-@test_approx_eq post.kappa kappa0 + n
-@test_approx_eq post.nu nu0 + n
-@test_approx_eq (post.Tchol[:U]'*post.Tchol[:U]) T0 + A_mul_Bt(Xm, Xm) + kappa0*n/(kappa0+n)*(Xbar-mu0)*(Xbar-mu0)'
+@test post.mu ≈ (kappa0*mu0 + n*Xbar)./(kappa0 + n)
+@test post.kappa ≈ kappa0 + n
+@test post.nu ≈ nu0 + n
+@test (post.Tchol[:U]'*post.Tchol[:U]) ≈ T0 + A_mul_Bt(Xm, Xm) + kappa0*n/(kappa0+n)*(Xbar-mu0)*(Xbar-mu0)'
 
 ps = posterior_randmodel(pri, MvNormal, X)
 

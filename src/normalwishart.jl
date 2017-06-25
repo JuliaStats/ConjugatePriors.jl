@@ -26,12 +26,18 @@ struct NormalWishart{T<:Real} <: ContinuousUnivariateDistribution
     end
 end
 
-function NormalWishart(mu::Vector{T}, kappa::T,
-                       Tmat::Matrix{T}, nu::T) where T<:Real
-    NormalWishart(mu, kappa, cholfact(Tmat), nu)
+function NormalWishart(mu::Vector{U}, kappa::Real,
+                                Tchol::Cholesky{S}, nu::Real) where {S<:Real, U<:Real}
+    T = promote_type(U,S,typeof(kappa), typeof(nu))
+    return NormalWishart{T}(Vector{T}(mu),T(kappa),Cholesky{T}(Tchol), T(nu))
 end
 
-function insupport(::Type{NormalWishart}, x::Vector{Float64}, Lam::Matrix{Float64})
+function NormalWishart(mu::Vector{T}, kappa::T,
+                       Tmat::Matrix{T}, nu::T) where T<:Real
+    NormalWishart{T}(mu, kappa, cholfact(Tmat), nu)
+end
+
+function insupport(::Type{NormalWishart}, x::Vector{T}, Lam::Matrix{T}) where T<:Real
     return (all(isfinite(x)) &&
            size(Lam, 1) == size(Lam, 2) &&
            isApproxSymmmetric(Lam) &&

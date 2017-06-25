@@ -15,6 +15,11 @@ struct NormalGamma{T<:Real} <: ContinuousUnivariateDistribution
     end
 end
 
+function NormalGamma(mu::Real, nu::Real, sh::Real, r::Real)
+    T = promote_type(typeof(mu), typeof(nu), typeof(sh), typeof(r))
+    return NormalGamma{T}(T(mu),T(nu),T(sh),T(r))
+end
+
 mu(d::NormalGamma) = d.mu
 nu(d::NormalGamma) = d.nu
 shape(d::NormalGamma) = d.shape

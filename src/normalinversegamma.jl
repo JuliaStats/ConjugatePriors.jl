@@ -15,6 +15,11 @@ struct NormalInverseGamma{T<:Real} <: ContinuousUnivariateDistribution
     end
 end
 
+function NormalInverseGamma(mu::Real, v0::Real, sh::Real, r::Real)
+    T = promote_type(typeof(mu), typeof(v0), typeof(sh), typeof(r))
+    return NormalInverseGamma{T}(T(mu),T(v0),T(sh),T(r))
+end
+
 mu(d::NormalInverseGamma) = d.mu
 v0(d::NormalInverseGamma) = d.v0
 shape(d::NormalInverseGamma) = d.shape
