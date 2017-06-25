@@ -3,15 +3,15 @@
 # a reference.  Note that there were some typos in that document so the code
 # here may not correspond exactly.
 
-immutable NormalGamma <: Distribution
-    mu::Float64
-    nu::Float64     # scales precision of Normal
-    shape::Float64  
-    rate::Float64
+struct NormalGamma{T<:Real} <: ContinuousUnivariateDistribution
+    mu::T
+    nu::T     # scales precision of Normal
+    shape::T  
+    rate::T
 
-    function NormalGamma(mu::Real, nu::Real, sh::Real, r::Real)
+    function NormalGamma{T}(mu::T, nu::T, sh::T, r::T) where T<:Real
     	nu > zero(nu) && sh > zero(sh) && r > zero(r) || error("Both shape and scale must be positive")
-    	new(mu, nu, sh, r)
+    	new(T(mu), T(nu), T(sh), T(r))
     end
 end
 
@@ -43,4 +43,3 @@ function rand(d::NormalGamma)
     mu = rand(Normal(d.mu, sqrt(1./(tau2*d.nu))))
     return mu, tau2
 end
-
