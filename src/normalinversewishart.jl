@@ -3,35 +3,42 @@
 # a reference.  Note that there were some typos in that document so the code
 # here may not correspond exactly.
 
-immutable NormalInverseWishart <: Distribution
+struct NormalInverseWishart{T<:Real} <: ContinuousUnivariateDistribution
     dim::Int
     zeromean::Bool
-    mu::Vector{Float64}
-    kappa::Float64              # This scales precision (inverse covariance)
-    Lamchol::Cholesky{Float64}  # Covariance matrix (well, sqrt of one)
-    nu::Float64
+    mu::Vector{T}
+    kappa::T              # This scales precision (inverse covariance)
+    Lamchol::Cholesky{T}  # Covariance matrix (well, sqrt of one)
+    nu::T
 
-    function NormalInverseWishart(mu::Vector{Float64}, kappa::Real,
-                                  Lamchol::Cholesky{Float64}, nu::Real)
+    function NormalInverseWishart{T}(mu::Vector{T}, kappa::T,
+                                  Lamchol::Cholesky{T}, nu::T) where T<:Real
         # Probably should put some error checking in here
         d = length(mu)
         zmean::Bool = true
         for i = 1:d
-            if mu[i] != 0.
+            if !iszero(mu[i])
                 zmean = false
                 break
             end
         end
-        @compat new(d, zmean, mu, Float64(kappa), Lamchol, Float64(nu))
+        new(d, zmean, mu, T(kappa), Lamchol, T(nu))
     end
 end
 
-function NormalInverseWishart(mu::Vector{Float64}, kappa::Real,
-                              Lambda::Matrix{Float64}, nu::Real)
-    NormalInverseWishart(mu, kappa, cholfact(Lambda), nu)
+function NormalInverseWishart(mu::Vector{U}, kappa::Real,
+                                Lamchol::Cholesky{S}, nu::Real) where {S<:Real, U<:Real}
+    T = promote_type(eltype(mu), typeof(kappa), typeof(nu), S)
+    return NormalInverseWishart{T}(Vector{T}(mu), T(kappa), Cholesky{T}(Lamchol), T(nu))
 end
 
-function insupport(::Type{NormalInverseWishart}, x::Vector{Float64}, Sig::Matrix{Float64})
+function NormalInverseWishart(mu::Vector{U}, kappa::Real,
+                              Lambda::Matrix{S}, nu::Real) where {S<:Real, U<:Real}
+    T = promote_type(eltype(mu), typeof(kappa), typeof(nu), S)
+    return NormalInverseWishart{T}(Vector{T}(mu), T(kappa), Cholesky{T}(cholfact(Lambda)), T(nu))
+end
+
+function insupport(::Type{NormalInverseWishart}, x::Vector{T}, Sig::Matrix{T}) where T<:Real
     return (all(isfinite(x)) &&
            size(Sig, 1) == size(Sig, 2) &&
            isApproxSymmmetric(Sig) &&
@@ -39,10 +46,10 @@ function insupport(::Type{NormalInverseWishart}, x::Vector{Float64}, Sig::Matrix
            hasCholesky(Sig))
 end
 
-pdf(niw::NormalInverseWishart, x::Vector{Float64}, Sig::Matrix{Float64}) =
+pdf(niw::NormalInverseWishart, x::Vector{T}, Sig::Matrix{T}) where T<:Real =
         exp(logpdf(niw, x, Sig))
 
-function logpdf(niw::NormalInverseWishart, x::Vector{Float64}, Sig::Matrix{Float64})
+function logpdf(niw::NormalInverseWishart, x::Vector{T}, Sig::Matrix{T}) where T<:Real
     if !insupport(NormalInverseWishart, x, Sig)
         return -Inf
     else
@@ -56,7 +63,7 @@ function logpdf(niw::NormalInverseWishart, x::Vector{Float64}, Sig::Matrix{Float
         hp = 0.5 * p
     
         # Normalization
-        logp::Float64 = hnu * logdet(Lamchol)
+        logp::T = hnu * logdet(Lamchol)
         logp -= hnu * p * log(2.)
         logp -= lpgamma(p, hnu)
         logp -= hp * (log(2.*pi) - log(kappa))
