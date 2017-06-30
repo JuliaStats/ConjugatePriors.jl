@@ -1,12 +1,12 @@
-VERSION >= v"0.4.0-dev+6521" && __precompile__()
+__precompile__()
 
 module ConjugatePriors
 
 using PDMats
 using Distributions
 
+import Base: mean
 import Base.LinAlg: Cholesky
-import Distributions: scale, mean
 
 import Distributions:
     BernoulliStats,
@@ -29,6 +29,7 @@ import Distributions:
     add!,
     add_categorical_counts!,
     shape,
+    scale,
     rate,
     mode,
     rand,

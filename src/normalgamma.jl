@@ -23,7 +23,7 @@ end
 mu(d::NormalGamma) = d.mu
 nu(d::NormalGamma) = d.nu
 shape(d::NormalGamma) = d.shape
-scale(d::NormalGamma{T}) where T = 1. / d.rate
+scale(d::NormalGamma) = 1. / d.rate
 rate(d::NormalGamma) = d.rate
 
 insupport(::Type{NormalGamma}, x::T, tau2::T) where T<:Real = 
