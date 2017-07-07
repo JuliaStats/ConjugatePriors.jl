@@ -11,3 +11,5 @@ notifications:
 #script:
 #  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
 #  - julia --check-bounds=yes -e 'Pkg.clone(pwd()); Pkg.build("ConjugatePriors"); Pkg.test("ConjugatePriors"; coverage=true)'
+after_success:
+  - julia -e 'cd(Pkg.dir("ConjugatePriors")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(process_folder())'
