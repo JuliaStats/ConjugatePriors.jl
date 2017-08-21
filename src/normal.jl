@@ -119,7 +119,7 @@ function posterior_canon(prior::NormalInverseChisq, ss::NormalStats)
     μn = (prior.κ*prior.μ + ss.s) / κn
     σ2n = (prior.ν*prior.σ2 + ss.s2 + ss.tw*prior.κ/(ss.tw + prior.κ)*abs2(prior.μ - ss.m)) / νn
 
-    NormalInverseChisq(μn, σ2n, κ, ν)
+    NormalInverseChisq(μn, σ2n, κn, νn)
 end
 
 complete(G::Type{Normal}, pri::NormalInverseChisq, t::NTuple{2,Float64}) = Normal(t[1], sqrt(t[2]))

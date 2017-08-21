@@ -1,158 +1,197 @@
-# Conjugates for normal distribution
+# 
 
 using Base.Test
 using Distributions
 using ConjugatePriors
 
-import ConjugatePriors: NormalGamma, NormalInverseGamma
-import ConjugatePriors: posterior, posterior_rand, posterior_mode, posterior_randmodel, fit_map
+using ConjugatePriors: NormalGamma, NormalInverseGamma, NormalInverseChisq
+using ConjugatePriors: posterior, posterior_rand, posterior_mode, posterior_randmodel, fit_map
 
 n = 100
 w = rand(100)
 
-# Νormal - Νormal (known sigma)
+@testset "Conjugates for normal distribution" begin
 
-pri = Normal(1.0, 5.0)
+    @testset "Νormal - Νormal (known sigma)" begin
 
-x = rand(Normal(2.0, 3.0), n)
-p = posterior((pri, 3.0), Normal, x)
-@test isa(p, Normal)
-@test mean(p) ≈ (mean(pri) / var(pri) + sum(x) / 9.0) / (1.0 / var(pri) + n / 9.0)
-@test var(p) ≈ inv(1.0 / var(pri) + n / 9.0)
+        pri = Normal(1.0, 5.0)
 
-r = posterior_mode((pri, 3.0), Normal, x)
-@test r ≈ mode(p)
+        x = rand(Normal(2.0, 3.0), n)
+        p = posterior((pri, 3.0), Normal, x)
+        @test isa(p, Normal)
+        @test mean(p) ≈ (mean(pri) / var(pri) + sum(x) / 9.0) / (1.0 / var(pri) + n / 9.0)
+        @test var(p) ≈ inv(1.0 / var(pri) + n / 9.0)
 
-f = fit_map((pri, 3.0), Normal, x)
-@test isa(f, Normal)
-@test f.μ == r
-@test f.σ == 3.0
+        r = posterior_mode((pri, 3.0), Normal, x)
+        @test r ≈ mode(p)
 
-p = posterior((pri, 3.0), Normal, x, w)
-@test isa(p, Normal)
-@test mean(p) ≈  (mean(pri) / var(pri) + dot(x, w) / 9.0) / (1.0 / var(pri) + sum(w) / 9.0)
-@test var(p) ≈ inv(1.0 / var(pri) + sum(w) / 9.0)
+        f = fit_map((pri, 3.0), Normal, x)
+        @test isa(f, Normal)
+        @test f.μ == r
+        @test f.σ == 3.0
 
-r = posterior_mode((pri, 3.0), Normal, x, w)
-@test r ≈ mode(p)
+        p = posterior((pri, 3.0), Normal, x, w)
+        @test isa(p, Normal)
+        @test mean(p) ≈  (mean(pri) / var(pri) + dot(x, w) / 9.0) / (1.0 / var(pri) + sum(w) / 9.0)
+        @test var(p) ≈ inv(1.0 / var(pri) + sum(w) / 9.0)
 
-f = fit_map((pri, 3.0), Normal, x, w)
-@test isa(f, Normal)
-@test f.μ == r
-@test f.σ == 3.0
+        r = posterior_mode((pri, 3.0), Normal, x, w)
+        @test r ≈ mode(p)
 
+        f = fit_map((pri, 3.0), Normal, x, w)
+        @test isa(f, Normal)
+        @test f.μ == r
+        @test f.σ == 3.0
 
-# ΙnverseGamma - Νormal (known mu)
+    end
 
-pri = InverseGamma(1.5, 0.5)
+    @testset "ΙnverseGamma - Νormal (known mu)" begin
 
-x = rand(Normal(2.0, 3.0), n)
-p = posterior((2.0, pri), Normal, x)
-@test isa(p, InverseGamma)
-@test shape(p) ≈ shape(pri) + n / 2
-@test scale(p) ≈ scale(pri) + sum(abs2.(x .- 2.0)) / 2
+        pri = InverseGamma(1.5, 0.5)
 
-r = posterior_mode((2.0, pri), Normal, x)
-@test r ≈ mode(p)
+        x = rand(Normal(2.0, 3.0), n)
+        p = posterior((2.0, pri), Normal, x)
+        @test isa(p, InverseGamma)
+        @test shape(p) ≈ shape(pri) + n / 2
+        @test scale(p) ≈ scale(pri) + sum(abs2.(x .- 2.0)) / 2
 
-f = fit_map((2.0, pri), Normal, x)
-@test isa(f, Normal)
-@test f.μ == 2.0
-@test abs2(f.σ) ≈ r
+        r = posterior_mode((2.0, pri), Normal, x)
+        @test r ≈ mode(p)
 
-p = posterior((2.0, pri), Normal, x, w)
-@test isa(p, InverseGamma)
-@test shape(p) ≈ shape(pri) + sum(w) / 2
-@test scale(p) ≈ scale(pri) + dot(w, abs2.(x .- 2.0)) / 2
+        f = fit_map((2.0, pri), Normal, x)
+        @test isa(f, Normal)
+        @test f.μ == 2.0
+        @test abs2(f.σ) ≈ r
 
-r = posterior_mode((2.0, pri), Normal, x, w)
-@test r ≈ mode(p)
+        p = posterior((2.0, pri), Normal, x, w)
+        @test isa(p, InverseGamma)
+        @test shape(p) ≈ shape(pri) + sum(w) / 2
+        @test scale(p) ≈ scale(pri) + dot(w, abs2.(x .- 2.0)) / 2
 
-f = fit_map((2.0, pri), Normal, x, w)
-@test isa(f, Normal)
-@test f.μ == 2.0
-@test abs2(f.σ) ≈ r
+        r = posterior_mode((2.0, pri), Normal, x, w)
+        @test r ≈ mode(p)
 
+        f = fit_map((2.0, pri), Normal, x, w)
+        @test isa(f, Normal)
+        @test f.μ == 2.0
+        @test abs2(f.σ) ≈ r
 
-# Gamma - Νormal (known mu)
+    end
 
-pri = Gamma(1.5, 2.0)
+    @testset "Gamma - Νormal (known mu)" begin
 
-x = rand(Normal(2.0, 3.0), n)
-p = posterior((2.0, pri), Normal, x)
-@test isa(p, Gamma)
-@test shape(p) ≈ shape(pri) + n / 2
-@test scale(p) ≈ scale(pri) + sum(abs2.(x .- 2.0)) / 2
+        pri = Gamma(1.5, 2.0)
 
-r = posterior_mode((2.0, pri), Normal, x)
-@test r ≈ mode(p)
+        x = rand(Normal(2.0, 3.0), n)
+        p = posterior((2.0, pri), Normal, x)
+        @test isa(p, Gamma)
+        @test shape(p) ≈ shape(pri) + n / 2
+        @test scale(p) ≈ scale(pri) + sum(abs2.(x .- 2.0)) / 2
 
-f = fit_map((2.0, pri), Normal, x)
-@test isa(f, Normal)
-@test f.μ == 2.0
-@test abs2(f.σ) ≈ inv(r)
+        r = posterior_mode((2.0, pri), Normal, x)
+        @test r ≈ mode(p)
 
-p = posterior((2.0, pri), Normal, x, w)
-@test isa(p, Gamma)
-@test shape(p) ≈ shape(pri) + sum(w) / 2
-@test scale(p) ≈ scale(pri) + dot(w, abs2.(x .- 2.0)) / 2
+        f = fit_map((2.0, pri), Normal, x)
+        @test isa(f, Normal)
+        @test f.μ == 2.0
+        @test abs2(f.σ) ≈ inv(r)
 
-r = posterior_mode((2.0, pri), Normal, x, w)
-@test r ≈ mode(p)
+        p = posterior((2.0, pri), Normal, x, w)
+        @test isa(p, Gamma)
+        @test shape(p) ≈ shape(pri) + sum(w) / 2
+        @test scale(p) ≈ scale(pri) + dot(w, abs2.(x .- 2.0)) / 2
 
-f = fit_map((2.0, pri), Normal, x, w)
-@test isa(f, Normal)
-@test f.μ == 2.0
-@test abs2(f.σ) ≈ inv(r)
+        r = posterior_mode((2.0, pri), Normal, x, w)
+        @test r ≈ mode(p)
 
+        f = fit_map((2.0, pri), Normal, x, w)
+        @test isa(f, Normal)
+        @test f.μ == 2.0
+        @test abs2(f.σ) ≈ inv(r)
 
-# NormalInverseGamma - Normal
+    end
 
-mu_true = 2.
-sig2_true = 3.
-x = rand(Normal(mu_true, sig2_true), n)
+    @testset "NormalInverseGamma - Normal" begin
 
-mu0 = 2.
-v0 = 3.
-shape0 = 5.
-scale0 = 2.
-pri = NormalInverseGamma(mu0, v0, shape0, scale0)
+        mu_true = 2.
+        sig2_true = 3.
+        x = rand(Normal(mu_true, sig2_true), n)
 
-post = posterior(pri, Normal, x)
-@test isa(post, NormalInverseGamma)
+        mu0 = 2.
+        v0 = 3.
+        shape0 = 5.
+        scale0 = 2.
+        pri = NormalInverseGamma(mu0, v0, shape0, scale0)
 
-@test post.mu ≈ (mu0/v0 + n*mean(x))/(1./v0 + n)
-@test post.v0 ≈ 1./(1./v0 + n)
-@test post.shape ≈ shape0 + 0.5*n
-@test post.scale ≈ scale0 + 0.5*(n-1)*var(x) + n./v0./(n + 1./v0)*0.5*(mean(x)-mu0).^2
+        post = posterior(pri, Normal, x)
+        @test isa(post, NormalInverseGamma)
 
-ps = posterior_randmodel(pri, Normal, x)
+        @test post.mu ≈ (mu0/v0 + n*mean(x))/(1./v0 + n)
+        @test post.v0 ≈ 1./(1./v0 + n)
+        @test post.shape ≈ shape0 + 0.5*n
+        @test post.scale ≈ scale0 + 0.5*(n-1)*var(x) + n./v0./(n + 1./v0)*0.5*(mean(x)-mu0).^2
 
-@test isa(ps, Normal)
-@test insupport(ps,ps.μ) && ps.σ > zero(ps.σ)
+        ps = posterior_randmodel(pri, Normal, x)
 
+        @test isa(ps, Normal)
+        @test insupport(ps,ps.μ) && ps.σ > zero(ps.σ)
 
-# NormalGamma - Normal
+    end
 
-mu_true = 2.
-tau2_true = 3.
-x = rand(Normal(mu_true, 1./tau2_true), n)
+    @testset "NormalInverseChisq - Normal" begin
 
-mu0 = 2.
-nu0 = 3.
-shape0 = 5.
-rate0 = 2.
-pri = NormalGamma(mu0, nu0, shape0, rate0)
+        mu_true = 2.
+        sig2_true = 3.
+        x = rand(Normal(mu_true, sig2_true), n)
 
-post = posterior(pri, Normal, x)
-@test isa(post, NormalGamma)
+        μ0 = 2.0
+        σ20 = 2.0/5.0
+        κ0 = 1.0/3.0
+        ν0 = 10.0
 
-@test post.mu ≈ (nu0*mu0 + n*mean(x))./(nu0 + n)
-@test post.nu ≈ nu0 + n
-@test post.shape ≈ shape0 + 0.5*n
-@test post.rate ≈ rate0 + 0.5*(n-1)*var(x) + n*nu0/(n + nu0)*0.5*(mean(x)-mu0).^2
+        pri = NormalInverseChisq(μ0, σ20, κ0, ν0)
+        pri2 = NormalInverseGamma(pri)
 
-ps = posterior_randmodel(pri, Normal, x)
+        @test NormalInverseChisq(pri2) == pri
 
-@test isa(ps, Normal)
-@test insupport(ps, ps.μ) && ps.σ > zero(ps.σ)
+        @test mode(pri2) == mode(pri)
+        @test mean(pri2) == mean(pri)
+        @test pdf(pri, mu_true, sig2_true) == pdf(pri2, mu_true, sig2_true)
+        
+        @test (srand(1); rand(pri)) == (srand(1); rand(pri2))
+
+        # check that updating is consistent between NIχ2 and NIG
+        post = posterior(pri, Normal, x)
+        post2 = posterior(pri2, Normal, x)
+        @test isa(post, NormalInverseChisq)
+        @test NormalInverseChisq(post2) == post
+
+    end
+
+    @testset "NormalGamma - Normal" begin
+
+        mu_true = 2.
+        tau2_true = 3.
+        x = rand(Normal(mu_true, 1./tau2_true), n)
+
+        mu0 = 2.
+        nu0 = 3.
+        shape0 = 5.
+        rate0 = 2.
+        pri = NormalGamma(mu0, nu0, shape0, rate0)
+
+        post = posterior(pri, Normal, x)
+        @test isa(post, NormalGamma)
+
+        @test post.mu ≈ (nu0*mu0 + n*mean(x))./(nu0 + n)
+        @test post.nu ≈ nu0 + n
+        @test post.shape ≈ shape0 + 0.5*n
+        @test post.rate ≈ rate0 + 0.5*(n-1)*var(x) + n*nu0/(n + nu0)*0.5*(mean(x)-mu0).^2
+
+        ps = posterior_randmodel(pri, Normal, x)
+
+        @test isa(ps, Normal)
+        @test insupport(ps, ps.μ) && ps.σ > zero(ps.σ)
+    end
+    
+end
