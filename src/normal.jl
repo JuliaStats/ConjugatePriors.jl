@@ -111,6 +111,19 @@ end
 
 complete(G::Type{Normal}, pri::NormalInverseGamma, t::NTuple{2,Float64}) = Normal(t[1], sqrt(t[2]))
 
+#### NormalInverseChisq on (μ, σ^2)
+
+function posterior_canon(prior::NormalInverseChisq, ss::NormalStats)
+    κn = prior.κ + ss.tw
+    νn = prior.ν + ss.tw
+    μn = (prior.κ*prior.μ + ss.s) / κn
+    σ2n = (prior.ν*prior.σ2 + ss.s2 + ss.tw*prior.κ/(ss.tw + prior.κ)*abs2(prior.μ - ss.m)) / νn
+
+    NormalInverseChisq(μn, σ2n, κ, ν)
+end
+
+complete(G::Type{Normal}, pri::NormalInverseChisq, t::NTuple{2,Float64}) = Normal(t[1], sqrt(t[2]))
+
 
 #### NormalGamma on (μ, σ^(-2))
 
