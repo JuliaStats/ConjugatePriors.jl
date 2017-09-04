@@ -19,13 +19,15 @@ struct NormalInverseChisq{T<:Real} <: ContinuousUnivariateDistribution
     ν::T
 
     function NormalInverseChisq{T}(μ::T, σ2::T, κ::T, ν::T) where T<:Real
-        ν > zero(ν) &&
-            κ > zero(κ) &&
+        ν >= zero(ν) &&
+            κ >= zero(κ) &&
             σ2 > zero(σ2) ||
             error("Variance and confidence (κ and ν) must all be positive")
         new{T}(μ, σ2, κ, ν)
     end
 end
+
+NormalInverseChisq() = NormalInverseChisq{Float64}(0.0, 1.0, 0.0, 0.0)
 
 function NormalInverseChisq(μ::Real, σ2::Real, κ::Real, ν::Real)
     T = promote_type(typeof(μ), typeof(σ2), typeof(κ), typeof(ν))
@@ -40,6 +42,8 @@ Base.convert(::Type{NormalInverseChisq}, d::NormalInverseGamma) =
 
 insupport(::Type{NormalInverseChisq}, μ::T, σ2::T) where T<:Real =
     isfinite(μ) && zero(σ2) <= σ2 < Inf
+
+params(d::NormalInverseChisq) = d.μ, d.σ2, d.κ, d.ν
 
 # function pdf(d::NormalInverseChisq, μ::T, σ2::T) where T<:Real
 #     Zinv = sqrt(d.κ / 2pi) / gamma(d.ν*0.5) * (d.ν * d.σ2 / 2)^(d.ν*0.5)

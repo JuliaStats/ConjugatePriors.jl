@@ -8,6 +8,8 @@ using Distributions
 import Base: mean
 import Base.LinAlg: Cholesky
 
+
+
 import Distributions:
     BernoulliStats,
     BinomData,
@@ -34,7 +36,8 @@ import Distributions:
     mode,
     rand,
     pdf,
-    logpdf
+    logpdf,
+    params
 
 include("fallbacks.jl")
 include("beta_binom.jl")
