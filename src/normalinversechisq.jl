@@ -13,9 +13,9 @@ The parameters have a natural interpretation when used as a prior for a Normal
 distribution with unknown mean and variance: μ and σ2 are the expected mean and
 variance, while κ and ν are the respective degrees of confidence (expressed in
 "pseudocounts").  When interpretable parameters are important, this makes it a
-slightly more convient parametrization of the conjugate prior.
+slightly more convenient parametrization of the conjugate prior.
 
-Equivalent to a Normal-Inverse Gamma distribution with parameters:
+Equivalent to a `NormalInverseGamma` distribution with parameters:
 
 * m0 = μ
 * v0 = 1/κ
