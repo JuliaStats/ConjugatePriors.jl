@@ -166,6 +166,12 @@ w = rand(100)
         @test isa(post, NormalInverseChisq)
         @test NormalInverseChisq(post2) == post
 
+        for _ in 1:10
+            x = rand(post)
+            @test pdf(post, x...) ≈ pdf(post2, x...)
+            @test logpdf(post, x...) ≈ logpdf(post2, x...)
+        end
+
     end
 
     @testset "NormalGamma - Normal" begin

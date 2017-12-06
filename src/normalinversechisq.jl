@@ -56,18 +56,26 @@ insupport(::Type{NormalInverseChisq}, μ::T, σ2::T) where T<:Real =
 
 params(d::NormalInverseChisq) = d.μ, d.σ2, d.κ, d.ν
 
-# function pdf(d::NormalInverseChisq, μ::T, σ2::T) where T<:Real
-#     Zinv = sqrt(d.κ / 2pi) / gamma(d.ν*0.5) * (d.ν * d.σ2 / 2)^(d.ν*0.5)
-#     Zinv * σ2^(-(d.ν+3)*0.5) * exp( (d.ν*d.σ2 + d.κ*(d.μ - μ)^2) / (-2 * σ2))
-# end
+function pdf(d::NormalInverseChisq, μ::T, σ2::T) where T<:Real
+    Zinv = sqrt(d.κ / 2pi) / gamma(d.ν*0.5) * (d.ν * d.σ2 / 2)^(d.ν*0.5)
+    Zinv * σ2^(-(d.ν+3)*0.5) * exp( (d.ν*d.σ2 + d.κ*(d.μ - μ)^2) / (-2 * σ2))
+end
 
-# function logpdf(d::NormalInverseChisq, μ::T, σ2::T) where T<:Real
-#     logZinv = (log(d.κ) - log(2pi))*0.5 - lgamma(d.ν*0.5) + (log(d.ν) + log(d.σ2) - log(2)) * (d.ν/2)
-#     logZinv + log(σ2)*(-(d.ν+3)*0.5) + (d.ν*d.σ2 + d.κ*(d.μ - μ)^2) / (-2 * σ2)
-# end
+function logpdf(d::NormalInverseChisq, μ::T, σ2::T) where T<:Real
+    logZinv = (log(d.κ) - log(2pi))*0.5 - lgamma(d.ν*0.5) + (log(d.ν) + log(d.σ2) - log(2)) * (d.ν/2)
+    logZinv + log(σ2)*(-(d.ν+3)*0.5) + (d.ν*d.σ2 + d.κ*(d.μ - μ)^2) / (-2 * σ2)
+end
 
-pdf(d::NormalInverseChisq, μ::T, σ2::T) where T<:Real = pdf(NormalInverseGamma(d), μ, σ2)
-logpdf(d::NormalInverseChisq, μ::T, σ2::T) where T<:Real = logpdf(NormalInverseGamma(d), μ, σ2)
-mean(d::NormalInverseChisq) = mean(NormalInverseGamma(d))
-mode(d::NormalInverseChisq) = mode(NormalInverseGamma(d))
+function mean(d::NormalInverseChisq)
+    μ = d.μ
+    σ2 = d.ν/(d.ν-2)*d.σ2
+    return μ, σ2
+end
+
+function mode(d::NormalInverseChisq)
+    μ = d.μ
+    σ2 = d.ν*d.σ2/(d.ν - 1)
+    return μ, σ2
+end
+
 rand(d::NormalInverseChisq) = rand(NormalInverseGamma(d))
