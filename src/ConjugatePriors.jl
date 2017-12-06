@@ -8,8 +8,6 @@ using Distributions
 import Base: mean
 import Base.LinAlg: Cholesky
 
-
-
 import Distributions:
     BernoulliStats,
     BinomData,
