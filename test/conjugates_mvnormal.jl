@@ -2,9 +2,8 @@
 
 using Distributions
 using ConjugatePriors
-using Base.Test
 
-import ConjugatePriors: posterior, posterior_randmodel, NormalWishart, NormalInverseWishart
+using ConjugatePriors: posterior, posterior_randmodel, NormalWishart, NormalInverseWishart
 
 @testset "Conjugate models for multivariate normal" begin
 
