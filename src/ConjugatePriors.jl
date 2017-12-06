@@ -34,7 +34,8 @@ import Distributions:
     mode,
     rand,
     pdf,
-    logpdf
+    logpdf,
+    params
 
 include("fallbacks.jl")
 include("beta_binom.jl")
@@ -43,6 +44,7 @@ include("gamma_exp.jl")
 
 include("normalgamma.jl")
 include("normalinversegamma.jl")
+include("normalinversechisq.jl")
 include("normalwishart.jl")
 include("normalinversewishart.jl")
 include("normal.jl")
