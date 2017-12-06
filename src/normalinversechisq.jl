@@ -1,17 +1,29 @@
-# Based on Murphy (2007) Conjugate Bayesian Analysis of the Gaussian
-# distribution.  Equivalent to the Normal-Inverse Gamma under the follow
-# re-parametrization:
-#
-# m0 = μ
-# v0 = 1/κ
-# shape = ν/2
-# scale = νσ2/2
-#
-# The parameters have a natural interpretation when used as a prior for a Normal
-# distribution with unknown mean and variance: μ and σ2 are the expected mean
-# and variance, while κ and ν are the respective degrees of confidence
-# (expressed in "pseudocounts").
+"""
+    NormalInverseChisq(μ, σ2, κ, ν)
 
+A Normal-χ^-2 distribution is a conjugate prior for a Normal distribution with
+unknown mean and variance.  It has parameters:
+
+* μ: expected mean
+* σ2 > 0: expected variance
+* κ ≥ 0: mean confidence
+* ν ≥ 0: variance confidence
+
+The parameters have a natural interpretation when used as a prior for a Normal
+distribution with unknown mean and variance: μ and σ2 are the expected mean and
+variance, while κ and ν are the respective degrees of confidence (expressed in
+"pseudocounts").  When interpretable parameters are important, this makes it a
+slightly more convient parametrization of the conjugate prior.
+
+Equivalent to a Normal-Inverse Gamma distribution with parameters:
+
+* m0 = μ
+* v0 = 1/κ
+* shape = ν/2
+* scale = νσ2/2
+
+Based on Murphy "Conjugate Bayesian analysis of the Gaussian distribution".
+"""
 struct NormalInverseChisq{T<:Real} <: ContinuousUnivariateDistribution
     μ::T
     σ2::T
@@ -19,10 +31,9 @@ struct NormalInverseChisq{T<:Real} <: ContinuousUnivariateDistribution
     ν::T
 
     function NormalInverseChisq{T}(μ::T, σ2::T, κ::T, ν::T) where T<:Real
-        ν >= zero(ν) &&
-            κ >= zero(κ) &&
-            σ2 > zero(σ2) ||
-            error("Variance and confidence (κ and ν) must all be positive")
+        if ν < 0 || κ < 0 || σ2 ≤ 0
+            throw(ArgumentError("Variance and confidence (κ and ν) must all be positive"))
+        end
         new{T}(μ, σ2, κ, ν)
     end
 end
