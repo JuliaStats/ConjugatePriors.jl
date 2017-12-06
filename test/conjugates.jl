@@ -1,4 +1,3 @@
-using Base.Test
 using Distributions
 using ConjugatePriors
 
@@ -26,144 +25,155 @@ function ccount(K, x, w)
 end
 
 
-# Beta - Bernoulli
+@testset "Beta - Bernoulli" begin
 
-pri = Beta(1.0, 2.0)
+    pri = Beta(1.0, 2.0)
 
-x = rand(Bernoulli(0.3), n)
-p = posterior(pri, Bernoulli, x)
-@test isa(p, Beta)
-@test p.α ≈ pri.α + sum(x)
-@test p.β ≈ pri.β + (n - sum(x))
+    x = rand(Bernoulli(0.3), n)
+    p = posterior(pri, Bernoulli, x)
+    @test isa(p, Beta)
+    @test p.α ≈ pri.α + sum(x)
+    @test p.β ≈ pri.β + (n - sum(x))
 
-f = fit_map(pri, Bernoulli, x)
-@test isa(f, Bernoulli)
-@test succprob(f) ≈ mode(p)
+    f = fit_map(pri, Bernoulli, x)
+    @test isa(f, Bernoulli)
+    @test succprob(f) ≈ mode(p)
 
-p = posterior(pri, Bernoulli, x, w)
-@test isa(p, Beta)
-@test p.α ≈ pri.α + sum(x .* w)
-@test p.β ≈ pri.β + (sum(w) - sum(x .* w))
+    p = posterior(pri, Bernoulli, x, w)
+    @test isa(p, Beta)
+    @test p.α ≈ pri.α + sum(x .* w)
+    @test p.β ≈ pri.β + (sum(w) - sum(x .* w))
 
-f = fit_map(pri, Bernoulli, x, w)
-@test isa(f, Bernoulli)
-@test succprob(f) ≈ mode(p)
-
-
-# posterior_rand & posterior_randmodel
-
-pri = Beta(1.0, 2.0)
-x = rand(Bernoulli(0.3), n)
-post = posterior(pri, Bernoulli, x)
-
-pv = posterior_rand(pri, Bernoulli, x)
-@test isa(pv, Float64)
-@test 0. <= pv <= 1.
-
-pv = posterior_rand(pri, Bernoulli, x, w)
-@test isa(pv, Float64)
-@test 0. <= pv <= 1.
-
-pm = posterior_randmodel(pri, Bernoulli, x)
-@test isa(pm, Bernoulli)
-@test 0. <= succprob(pm) <= 1.
-
-pm = posterior_randmodel(pri, Bernoulli, x, w)
-@test isa(pm, Bernoulli)
-@test 0. <= succprob(pm) <= 1.
+    f = fit_map(pri, Bernoulli, x, w)
+    @test isa(f, Bernoulli)
+    @test succprob(f) ≈ mode(p)
 
 
-# Beta - Binomial
+    @testset "posterior_rand & posterior_randmodel" begin
 
-x = rand(Binomial(10, 0.3), n)
-p = posterior(pri, Binomial, (10, x))
-@test isa(p, Beta)
-@test p.α ≈ pri.α + sum(x)
-@test p.β ≈ pri.β + (10n - sum(x))
+        pri = Beta(1.0, 2.0)
+        x = rand(Bernoulli(0.3), n)
+        post = posterior(pri, Bernoulli, x)
 
-f = fit_map(pri, Binomial, (10, x))
-@test isa(f, Binomial)
-@test ntrials(f) == 10
-@test succprob(f) ≈ mode(p)
+        pv = posterior_rand(pri, Bernoulli, x)
+        @test isa(pv, Float64)
+        @test 0. <= pv <= 1.
 
-p = posterior(pri, Binomial, (10, x), w)
-@test isa(p, Beta)
-@test p.α ≈ pri.α + sum(x .* w)
-@test p.β ≈ pri.β + (10 * sum(w) - sum(x .* w))
+        pv = posterior_rand(pri, Bernoulli, x, w)
+        @test isa(pv, Float64)
+        @test 0. <= pv <= 1.
 
-f = fit_map(pri, Binomial, (10, x), w)
-@test isa(f, Binomial)
-@test ntrials(f) == 10
-@test succprob(f) ≈ mode(p)
+        pm = posterior_randmodel(pri, Bernoulli, x)
+        @test isa(pm, Bernoulli)
+        @test 0. <= succprob(pm) <= 1.
 
+        pm = posterior_randmodel(pri, Bernoulli, x, w)
+        @test isa(pm, Bernoulli)
+        @test 0. <= succprob(pm) <= 1.
+    end
+    
+end
 
-# Dirichlet - Categorical
+@testset "Beta - Binomial" begin
 
-pri = Dirichlet([1., 2., 3.])
+    pri = Beta(1.0, 2.0)
 
-x = rand(Categorical([0.2, 0.3, 0.5]), n)
-p = posterior(pri, Categorical, x)
-@test isa(p, Dirichlet)
-@test p.alpha ≈ pri.alpha + ccount(3, x)
+    x = rand(Binomial(10, 0.3), n)
+    p = posterior(pri, Binomial, (10, x))
+    @test isa(p, Beta)
+    @test p.α ≈ pri.α + sum(x)
+    @test p.β ≈ pri.β + (10n - sum(x))
 
-f = fit_map(pri, Categorical, x)
-@test isa(f, Categorical)
-@test probs(f) ≈ mode(p)
+    f = fit_map(pri, Binomial, (10, x))
+    @test isa(f, Binomial)
+    @test ntrials(f) == 10
+    @test succprob(f) ≈ mode(p)
 
-p = posterior(pri, Categorical, x, w)
-@test isa(p, Dirichlet)
-@test p.alpha ≈ pri.alpha + ccount(3, x, w)
+    p = posterior(pri, Binomial, (10, x), w)
+    @test isa(p, Beta)
+    @test p.α ≈ pri.α + sum(x .* w)
+    @test p.β ≈ pri.β + (10 * sum(w) - sum(x .* w))
 
-f = fit_map(pri, Categorical, x, w)
-@test isa(f, Categorical)
-@test probs(f) ≈ mode(p)
+    f = fit_map(pri, Binomial, (10, x), w)
+    @test isa(f, Binomial)
+    @test ntrials(f) == 10
+    @test succprob(f) ≈ mode(p)
 
+end
 
-# Dirichlet - Multinomial
+@testset "Dirichlet - Categorical" begin
 
-x = rand(Multinomial(100, [0.2, 0.3, 0.5]), 1)
-p = posterior(pri, Multinomial, x)
-@test isa(p, Dirichlet)
-@test p.alpha ≈ pri.alpha + x
+    pri = Dirichlet([1., 2., 3.])
 
-r = posterior_mode(pri, Multinomial, x)
-@test r ≈ mode(p)
+    x = rand(Categorical([0.2, 0.3, 0.5]), n)
+    p = posterior(pri, Categorical, x)
+    @test isa(p, Dirichlet)
+    @test p.alpha ≈ pri.alpha + ccount(3, x)
 
-x = rand(Multinomial(10, [0.2, 0.3, 0.5]), n)
-p = posterior(pri, Multinomial, x)
-@test isa(p, Dirichlet)
-@test p.alpha ≈ pri.alpha + vec(sum(x, 2))
+    f = fit_map(pri, Categorical, x)
+    @test isa(f, Categorical)
+    @test probs(f) ≈ mode(p)
 
-r = posterior_mode(pri, Multinomial, x)
-@test r ≈ mode(p)
+    p = posterior(pri, Categorical, x, w)
+    @test isa(p, Dirichlet)
+    @test p.alpha ≈ pri.alpha + ccount(3, x, w)
 
-p = posterior(pri, Multinomial, x, w)
-@test isa(p, Dirichlet)
-@test p.alpha ≈ pri.alpha + vec(x * w)
+    f = fit_map(pri, Categorical, x, w)
+    @test isa(f, Categorical)
+    @test probs(f) ≈ mode(p)
 
-r = posterior_mode(pri, Multinomial, x, w)
-@test r ≈ mode(p)
+end
 
+@testset "Dirichlet - Multinomial" begin
 
-# Gamma - Exponential
+    pri = Dirichlet([1., 2., 3.])
 
-pri = Gamma(1.5, 2.0)
+    x = rand(Multinomial(100, [0.2, 0.3, 0.5]), 1)
+    p = posterior(pri, Multinomial, x)
+    @test isa(p, Dirichlet)
+    @test p.alpha ≈ pri.alpha + x
 
-x = rand(Exponential(2.0), n)
-p = posterior(pri, Exponential, x)
-@test isa(p, Gamma)
-@test shape(p) ≈ shape(pri) + n
-@test rate(p) ≈ rate(pri) + sum(x)
+    r = posterior_mode(pri, Multinomial, x)
+    @test r ≈ mode(p)
 
-f = fit_map(pri, Exponential, x)
-@test isa(f, Exponential)
-@test rate(f) ≈ mode(p)
+    x = rand(Multinomial(10, [0.2, 0.3, 0.5]), n)
+    p = posterior(pri, Multinomial, x)
+    @test isa(p, Dirichlet)
+    @test p.alpha ≈ pri.alpha + vec(sum(x, 2))
 
-p = posterior(pri, Exponential, x, w)
-@test isa(p, Gamma)
-@test shape(p) ≈ shape(pri) + sum(w)
-@test rate(p) ≈ rate(pri) + sum(x .* w)
+    r = posterior_mode(pri, Multinomial, x)
+    @test r ≈ mode(p)
 
-f = fit_map(pri, Exponential, x, w)
-@test isa(f, Exponential)
-@test rate(f) ≈ mode(p)
+    p = posterior(pri, Multinomial, x, w)
+    @test isa(p, Dirichlet)
+    @test p.alpha ≈ pri.alpha + vec(x * w)
+
+    r = posterior_mode(pri, Multinomial, x, w)
+    @test r ≈ mode(p)
+
+end
+
+@testset "Gamma - Exponential" begin
+
+    pri = Gamma(1.5, 2.0)
+
+    x = rand(Exponential(2.0), n)
+    p = posterior(pri, Exponential, x)
+    @test isa(p, Gamma)
+    @test shape(p) ≈ shape(pri) + n
+    @test rate(p) ≈ rate(pri) + sum(x)
+
+    f = fit_map(pri, Exponential, x)
+    @test isa(f, Exponential)
+    @test rate(f) ≈ mode(p)
+
+    p = posterior(pri, Exponential, x, w)
+    @test isa(p, Gamma)
+    @test shape(p) ≈ shape(pri) + sum(w)
+    @test rate(p) ≈ rate(pri) + sum(x .* w)
+
+    f = fit_map(pri, Exponential, x, w)
+    @test isa(f, Exponential)
+    @test rate(f) ≈ mode(p)
+
+end

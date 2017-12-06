@@ -1,6 +1,3 @@
-# 
-
-using Base.Test
 using Distributions
 using ConjugatePriors
 
