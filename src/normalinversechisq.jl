@@ -40,6 +40,9 @@ end
 
 NormalInverseChisq() = NormalInverseChisq{Float64}(0.0, 1.0, 0.0, 0.0)
 
+NormalInverseChisq(μ::T, σ2::T, κ::T, ν::T) where {T<:Real} =
+    NormalInverseChisq{T}(μ, σ2, κ, ν)
+
 function NormalInverseChisq(μ::Real, σ2::Real, κ::Real, ν::Real)
     T = promote_type(typeof(μ), typeof(σ2), typeof(κ), typeof(ν))
     NormalInverseChisq{T}(T(μ), T(σ2), T(κ), T(ν))
