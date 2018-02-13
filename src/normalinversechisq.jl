@@ -74,7 +74,7 @@ end
 
 function mode(d::NormalInverseChisq)
     μ = d.μ
-    σ2 = d.ν*d.σ2/(d.ν - 1)
+    σ2 = d.ν*d.σ2/(d.ν + 3)
     return μ, σ2
 end
 

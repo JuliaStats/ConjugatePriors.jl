@@ -133,6 +133,13 @@ w = rand(100)
         @test isa(ps, Normal)
         @test insupport(ps,ps.μ) && ps.σ > zero(ps.σ)
 
+        for shape in [0.1, 1., 10.]
+            d = NormalInverseGamma(mu0, v0, scale0, shape)
+            μ, σ2 = mode(d)
+            @test pdf(d, μ, σ2) > pdf(d, μ, σ2 + 0.001)
+            @test pdf(d, μ, σ2) > pdf(d, μ, σ2 - 0.001)
+        end
+
     end
 
     @testset "NormalInverseChisq - Normal" begin
@@ -151,7 +158,7 @@ w = rand(100)
 
         @test NormalInverseChisq(pri2) == pri
 
-        @test_broken mode(pri2) == mode(pri)
+        @test mode(pri2) == mode(pri)
         @test mean(pri2) == mean(pri)
         @test pdf(pri, mu_true, sig2_true) == pdf(pri2, mu_true, sig2_true)
         
@@ -167,6 +174,13 @@ w = rand(100)
             x = rand(post)
             @test pdf(post, x...) ≈ pdf(post2, x...)
             @test logpdf(post, x...) ≈ logpdf(post2, x...)
+        end
+
+        for ν in [0.1, 1., 10.]
+            nix = NormalInverseChisq(0., 2., 3., ν)
+            μ, σ2 = mode(nix)
+            @test pdf(nix, μ, σ2) > pdf(nix, μ, σ2 + 0.001)
+            @test pdf(nix, μ, σ2) > pdf(nix, μ, σ2 - 0.001)
         end
 
     end

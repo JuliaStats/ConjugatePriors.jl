@@ -43,7 +43,7 @@ end
 
 function mode(d::NormalInverseGamma)
     mu = d.mu
-    sig2 = d.scale / (d.shape + 1.0)
+    sig2 = d.scale / (d.shape + 1.5)
     return mu, sig2
 end
 
