@@ -133,6 +133,13 @@ w = rand(100)
         @test isa(ps, Normal)
         @test insupport(ps,ps.μ) && ps.σ > zero(ps.σ)
 
+        for shape in [0.1, 1., 10.]
+            d = NormalInverseGamma(mu0, v0, scale0, shape)
+            μ, σ2 = mode(d)
+            @test pdf(d, μ, σ2) > pdf(d, μ, σ2 + 0.001)
+            @test pdf(d, μ, σ2) > pdf(d, μ, σ2 - 0.001)
+        end
+
     end
 
     @testset "NormalInverseChisq - Normal" begin
