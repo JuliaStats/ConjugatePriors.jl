@@ -169,6 +169,13 @@ w = rand(100)
             @test logpdf(post, x...) ≈ logpdf(post2, x...)
         end
 
+        for ν in [0.1, 1., 10.]
+            nix = NormalInverseChisq(0., 2., 3., ν)
+            μ, σ2 = mode(nix)
+            @test pdf(nix, μ, σ2) > pdf(nix, μ, σ2 + 0.001)
+            @test pdf(nix, μ, σ2) > pdf(nix, μ, σ2 - 0.001)
+        end
+
     end
 
     @testset "NormalGamma - Normal" begin
