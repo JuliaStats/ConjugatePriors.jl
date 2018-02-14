@@ -5,6 +5,12 @@ os:
 julia:
   - 0.6
   - nightly
+matrix:
+  allow_failures:
+    - julia: nightly
+      os: linux
+    - julia: nightly
+      os: osx
 notifications:
   email: false
 # uncomment the following lines to override the default test script
