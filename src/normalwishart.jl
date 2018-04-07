@@ -3,7 +3,7 @@
 # a reference.  Note that there were some typos in that document so the code
 # here may not correspond exactly.
 
-struct NormalWishart{T<:Real} <: ContinuousUnivariateDistribution
+struct NormalWishart{T<:Real} <: ContinuousMultivariateDistribution
     dim::Int
     zeromean::Bool
     mu::Vector{T}
