@@ -82,6 +82,7 @@ end
 
 function rand(nw::NormalWishart)
     Lam = rand(Wishart(nw.nu, nw.Tchol))
-    mu = rand(MvNormal(nw.mu, Hermitian(inv(Lam) ./ nw.kappa)) )
+    Lsym = PDMat(Symmetric(inv(Lam) ./ nw.kappa))
+    mu = rand(MvNormal(nw.mu, Lsym))
     return (mu, Lam)
 end
