@@ -3,7 +3,7 @@
 # a reference.  Note that there were some typos in that document so the code
 # here may not correspond exactly.
 
-struct NormalWishart{T<:Real} <: ContinuousUnivariateDistribution
+struct NormalWishart{T<:Real} <: ContinuousMultivariateDistribution
     dim::Int
     zeromean::Bool
     mu::Vector{T}
@@ -82,7 +82,7 @@ end
 
 function rand(nw::NormalWishart)
     Lam = rand(Wishart(nw.nu, nw.Tchol))
-    mu = rand(MvNormal(nw.mu, inv(Lam) ./ nw.kappa))
+    Lsym = PDMat(Symmetric(inv(Lam) ./ nw.kappa))
+    mu = rand(MvNormal(nw.mu, Lsym))
     return (mu, Lam)
 end
-
