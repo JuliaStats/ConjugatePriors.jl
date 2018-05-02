@@ -81,7 +81,8 @@ function logpdf(nw::NormalWishart, x::Vector{T}, Lam::Matrix{T}) where T<:Real
 end
 
 function rand(nw::NormalWishart)
-    Lam = rand(Wishart(nw.nu, nw.Tchol))
+    V = PDMat(Symmetric(inv(nw.Tchol)))
+    Lam = rand(Wishart(nw.nu, V))
     Lsym = PDMat(Symmetric(inv(Lam) ./ nw.kappa))
     mu = rand(MvNormal(nw.mu, Lsym))
     return (mu, Lam)
