@@ -40,7 +40,7 @@ end
 function insupport(::Type{NormalWishart}, x::Vector{T}, Lam::Matrix{T}) where T<:Real
     return (all(isfinite(x)) &&
            size(Lam, 1) == size(Lam, 2) &&
-           isApproxSymmmetric(Lam) &&
+          #isApproxSymmmetric(Lam) &&
            size(Lam, 1) == length(x) &&
            hasCholesky(Lam))
 end
@@ -62,7 +62,7 @@ function logpdf(nw::NormalWishart, x::Vector{T}, Lam::Matrix{T}) where T<:Real
         hp = 0.5 * p
 
         # Normalization
-        logp = hp*(log(kappa) - Float64(log2π))
+        logp = hp*(log(kappa) - Float64(log(2*π)))
         logp -= hnu * logdet(Tchol)
         logp -= hnu * p * log(2.)
         logp -= lpgamma(p, hnu)
