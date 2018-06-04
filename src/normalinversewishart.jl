@@ -46,6 +46,17 @@ function insupport(::Type{NormalInverseWishart}, x::Vector{T}, Sig::Matrix{T}) w
            hasCholesky(Sig))
 end
 
+"""
+    params(niw::NormalInverseWishart)
+
+The parameters are
+* μ::Vector{T<:Real} the expected mean vector
+* Λchol::Cholesky{T<:Real} the Cholesky decomposition of the scale matrix
+* κ::T<:Real prior pseudocount for the mean
+* ν::T<:Real prior pseudocount for the covariance
+"""
+params(niw::NormalInverseWishart) = (niw.mu, niw.Lamchol, niw.kappa, niw.nu)
+
 pdf(niw::NormalInverseWishart, x::Vector{T}, Sig::Matrix{T}) where T<:Real =
         exp(logpdf(niw, x, Sig))
 
