@@ -40,7 +40,7 @@ end
 function insupport(::Type{NormalWishart}, x::Vector{T}, Lam::Matrix{T}) where T<:Real
     return (all(isfinite(x)) &&
            size(Lam, 1) == size(Lam, 2) &&
-          #isApproxSymmmetric(Lam) &&
+           #isApproxSymmmetric(Lam) &&
            size(Lam, 1) == length(x) &&
            hasCholesky(Lam))
 end
@@ -52,6 +52,8 @@ function logpdf(nw::NormalWishart, x::Vector{T}, Lam::Matrix{T}) where T<:Real
     if !insupport(NormalWishart, x, Lam)
         return -Inf
     else
+        p=length(x)
+
         nu = nw.nu
         kappa = nw.kappa
         mu = nw.mu
@@ -67,8 +69,7 @@ function logpdf(nw::NormalWishart, x::Vector{T}, Lam::Matrix{T}) where T<:Real
 
         # Wishart (MvNormal contributes 0.5 as well)
         logp += (hnu - hp) * logdet(Lam)
-        T0 = Tchol[:U]'*Tchol[:U]
-        logp -= 0.5 * trace(T0 * Lam)
+        logp -= 0.5 * trace(Tchol \ Lam)
 
         # Normal
         z = nw.zeromean ? x : x - mu
@@ -79,8 +80,10 @@ function logpdf(nw::NormalWishart, x::Vector{T}, Lam::Matrix{T}) where T<:Real
 end
 
 function rand(nw::NormalWishart)
+    # forcibly symmetrize to pass checks in Distributions.Wishart
     V = PDMat(Symmetric(inv(nw.Tchol)))
     Lam = rand(Wishart(nw.nu, V))
+    # forcibly symmetrize to pass checks in Distributions.MvNormal
     Σsym = PDMat(Symmetric(inv(Lam) ./ nw.kappa))
     mu = rand(MvNormal(nw.mu, Σsym))
     return (mu, Lam)
