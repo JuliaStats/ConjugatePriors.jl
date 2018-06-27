@@ -12,9 +12,8 @@ import Base.LinAlg: Cholesky
 import PDMats: PDMat
 
 import StatsFuns:
-    isApproxSymmmetric,
     logmvgamma,
-    log2pi
+    log2π
 
 import Distributions:
     BernoulliStats,
@@ -43,7 +42,10 @@ import Distributions:
     rand,
     pdf,
     logpdf,
-    params
+    params,
+    isApproxSymmmetric,
+    hasCholesky
+
 
 include("fallbacks.jl")
 include("beta_binom.jl")
