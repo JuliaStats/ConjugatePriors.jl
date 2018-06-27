@@ -4,11 +4,16 @@ module ConjugatePriors
 
 using PDMats
 using Distributions
+using StatsFuns
 
 import Base: mean
 import Base.LinAlg: Cholesky
 
 import PDMats: PDMat
+
+import StatsFuns:
+    logmvgamma,
+    log2π
 
 import Distributions:
     BernoulliStats,
@@ -37,7 +42,10 @@ import Distributions:
     rand,
     pdf,
     logpdf,
-    params
+    params,
+    isApproxSymmmetric,
+    hasCholesky
+
 
 include("fallbacks.jl")
 include("beta_binom.jl")
