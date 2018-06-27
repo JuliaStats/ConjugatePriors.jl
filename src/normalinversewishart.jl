@@ -76,7 +76,7 @@ function logpdf(niw::NormalInverseWishart, x::Vector{T}, Sig::Matrix{T}) where T
         # Normalization
         logp::T = hnu * logdet(Lamchol)
         logp -= hnu * p * log(2.)
-        logp -= lpgamma(p, hnu)
+        logp -= logmvgamma(p, hnu)
         logp -= hp * (log(2.*pi) - log(kappa))
         
         # Inverse-Wishart

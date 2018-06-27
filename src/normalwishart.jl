@@ -65,7 +65,7 @@ function logpdf(nw::NormalWishart, x::Vector{T}, Lam::Matrix{T}) where T<:Real
         logp = hp*(log(kappa) - Float64(log2π))
         logp -= hnu * logdet(Tchol)
         logp -= hnu * p * log(2.)
-        logp -= lpgamma(p, hnu)
+        logp -= logmvgamma(p, hnu)
 
         # Wishart (MvNormal contributes 0.5 as well)
         logp += (hnu - hp) * logdet(Lam)
