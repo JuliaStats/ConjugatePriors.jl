@@ -3,7 +3,14 @@
 using Distributions
 using ConjugatePriors
 
-using ConjugatePriors: posterior, posterior_randmodel, NormalWishart, NormalInverseWishart
+using ConjugatePriors:
+    posterior,
+    posterior_randmodel,
+    NormalWishart,
+    NormalInverseWishart
+
+ConjugatePriors.NormalInverseWishart(nix2::NormalInverseChisq) =
+    NormalInverseWishart([nix2.μ], nix2.κ, nix2.ν*reshape([nix2.σ2], 1, 1), nix2.ν)
 
 @testset "Conjugate models for multivariate normal" begin
 
@@ -85,6 +92,30 @@ using ConjugatePriors: posterior, posterior_randmodel, NormalWishart, NormalInve
 
         @test isa(ps, MultivariateNormal)
         @test insupport(ps, ps.μ) && insupport(InverseWishart, ps.Σ.mat)
+
+        @testset "Equivalence with Normal-Inverse Chi-squared" begin
+            nix2 = NormalInverseChisq(1., 2., 3., 4.)
+            niw = NormalInverseWishart(nix2)
+
+            x = rand(Normal(3, 2), 100)
+
+            ss = suffstats(Normal, x)
+            ss_mv = suffstats(MvNormal, reshape(x, 1, :))
+
+            post_nix2 = posterior(nix2, ss)
+            post_niw = posterior(niw, ss_mv)
+
+            @test all(post_nix2.μ .≈ post_niw.mu)
+            @test post_nix2.κ ≈ post_niw.kappa
+            @test post_nix2.ν ≈ post_niw.nu
+            @test all(post_nix2.σ2 .≈ full(post_niw.Lamchol)[1] ./ post_niw.nu)
+
+            μ, σ2 = rand(post_nix2)
+            @test logpdf(post_nix2, μ, σ2) ≈ logpdf(post_niw, [μ], reshape([σ2], 1, 1))
+            @test logpdf(nix2, μ, σ2) ≈ logpdf(niw, [μ], reshape([σ2], 1, 1))
+
+        end
+
 
     end
     
