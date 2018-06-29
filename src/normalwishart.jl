@@ -8,7 +8,7 @@ struct NormalWishart{T<:Real} <: ContinuousMultivariateDistribution
     zeromean::Bool
     mu::Vector{T}
     kappa::T
-    Tchol::Cholesky{T}  # Precision matrix (well, sqrt of one)
+    Tchol::Cholesky{T}  #Prior inverse scale matrix
     nu::T
 
     function NormalWishart{T}(mu::Vector{T}, kappa::T,
@@ -40,7 +40,7 @@ end
 function insupport(::Type{NormalWishart}, x::Vector{T}, Lam::Matrix{T}) where T<:Real
     return (all(isfinite(x)) &&
            size(Lam, 1) == size(Lam, 2) &&
-           isApproxSymmmetric(Lam) &&
+           #isApproxSymmmetric(Lam) &&
            size(Lam, 1) == length(x) &&
            hasCholesky(Lam))
 end
@@ -52,7 +52,7 @@ function logpdf(nw::NormalWishart, x::Vector{T}, Lam::Matrix{T}) where T<:Real
     if !insupport(NormalWishart, x, Lam)
         return -Inf
     else
-        p = length(x)
+        p=length(x)
 
         nu = nw.nu
         kappa = nw.kappa
@@ -62,7 +62,7 @@ function logpdf(nw::NormalWishart, x::Vector{T}, Lam::Matrix{T}) where T<:Real
         hp = 0.5 * p
 
         # Normalization
-        logp = hp*(log(kappa) - Float64(log2π))
+        logp = hp*(log(kappa) - Float64(log(2*π)))
         logp -= hnu * logdet(Tchol)
         logp -= hnu * p * log(2.)
         logp -= logmvgamma(p, hnu)
@@ -76,13 +76,15 @@ function logpdf(nw::NormalWishart, x::Vector{T}, Lam::Matrix{T}) where T<:Real
         logp -= 0.5 * kappa * dot(z, Lam * z)
 
         return logp
-
     end
 end
 
 function rand(nw::NormalWishart)
-    Lam = rand(Wishart(nw.nu, nw.Tchol))
-    Lsym = PDMat(Symmetric(inv(Lam) ./ nw.kappa))
-    mu = rand(MvNormal(nw.mu, Lsym))
+    # forcibly symmetrize to pass checks in Distributions.Wishart
+    V = PDMat(Symmetric(inv(nw.Tchol)))
+    Lam = rand(Wishart(nw.nu, V))
+    # forcibly symmetrize to pass checks in Distributions.MvNormal
+    Σsym = PDMat(Symmetric(inv(Lam) ./ nw.kappa))
+    mu = rand(MvNormal(nw.mu, Σsym))
     return (mu, Lam)
 end
