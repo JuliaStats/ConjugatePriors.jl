@@ -39,7 +39,7 @@ function NormalInverseWishart(mu::Vector{U}, kappa::Real,
 end
 
 function insupport(::Type{NormalInverseWishart}, x::Vector{T}, Sig::Matrix{T}) where T<:Real
-    return (all(isfinite(x)) &&
+    return (all(isfinite, x) &&
            size(Sig, 1) == size(Sig, 2) &&
            isApproxSymmmetric(Sig) &&
            size(Sig, 1) == length(x) &&

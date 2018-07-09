@@ -38,7 +38,7 @@ function NormalWishart(mu::Vector{T}, kappa::T,
 end
 
 function insupport(::Type{NormalWishart}, x::Vector{T}, Lam::Matrix{T}) where T<:Real
-    return (all(isfinite(x)) &&
+    return (all(isfinite, x) &&
            size(Lam, 1) == size(Lam, 2) &&
            isApproxSymmmetric(Lam) &&
            size(Lam, 1) == length(x) &&

@@ -5,6 +5,7 @@ module ConjugatePriors
 using PDMats
 using Distributions
 using StatsFuns
+using SpecialFunctions
 
 import Base: mean
 import Base.LinAlg: Cholesky
