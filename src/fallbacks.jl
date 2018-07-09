@@ -3,9 +3,9 @@
 posterior_canon(pri, G::IncompleteFormulation, x) = posterior_canon(pri, suffstats(G, x))
 posterior_canon(pri, G::IncompleteFormulation, x, w) = posterior_canon(pri, suffstats(G, x, w))
 
-posterior{P<:Distribution}(pri::P, ss::SufficientStats) = Base.convert(P, posterior_canon(pri, ss))
-posterior{P<:Distribution}(pri::P, G::IncompleteFormulation, x) = Base.convert(P, posterior_canon(pri, G, x))
-posterior{P<:Distribution}(pri::P, G::IncompleteFormulation, x, w) = Base.convert(P, posterior_canon(pri, G, x, w))
+posterior(pri::P, ss::SufficientStats) where {P<:Distribution} = Base.convert(P, posterior_canon(pri, ss))
+posterior(pri::P, G::IncompleteFormulation, x) where {P<:Distribution} = Base.convert(P, posterior_canon(pri, G, x))
+posterior(pri::P, G::IncompleteFormulation, x, w) where {P<:Distribution} = Base.convert(P, posterior_canon(pri, G, x, w))
 
 posterior_rand(pri, ss::SufficientStats) = Base.rand(posterior_canon(pri, ss))
 posterior_rand(pri, G::IncompleteFormulation, x) = Base.rand(posterior_canon(pri, G, x))

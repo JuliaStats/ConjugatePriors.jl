@@ -11,11 +11,11 @@ complete(G::Type{Categorical}, pri::Dirichlet, p::Vector{Float64}) = Categorical
 
 posterior_canon(pri::Dirichlet, ss::CategoricalStats) = DirichletCanon(pri.alpha + ss.h)
 
-function posterior_canon{T<:Integer}(pri::Dirichlet, G::Type{Categorical}, x::Array{T})
+function posterior_canon(pri::Dirichlet, G::Type{Categorical}, x::Array{T}) where T<:Integer
 	DirichletCanon(add_categorical_counts!(copy(pri.alpha), x))
 end
 
-function posterior_canon{T<:Integer}(pri::Dirichlet, G::Type{Categorical}, x::Array{T}, w::Array{Float64})
+function posterior_canon(pri::Dirichlet, G::Type{Categorical}, x::Array{T}, w::Array{Float64}) where T<:Integer
 	DirichletCanon(add_categorical_counts!(copy(pri.alpha), x, w))
 end
 
@@ -23,14 +23,14 @@ end
 
 posterior_canon(pri::Dirichlet, ss::MultinomialStats) = DirichletCanon(pri.alpha + ss.scnts)
 
-function posterior_canon{T<:Real}(pri::Dirichlet, G::Type{Multinomial}, x::Matrix{T})
+function posterior_canon(pri::Dirichlet, G::Type{Multinomial}, x::Matrix{T}) where T<:Real
 	d = length(pri)
 	size(x,1) == d || throw(ArgumentError("Inconsistent argument dimensions."))
 	a = add!(sum(x, 2), pri.alpha)
 	DirichletCanon(vec(a))
 end
 
-function posterior_canon{T<:Real}(pri::Dirichlet, G::Type{Multinomial}, x::Matrix{T}, w::Array{Float64})
+function posterior_canon(pri::Dirichlet, G::Type{Multinomial}, x::Matrix{T}, w::Array{Float64}) where T<:Real
 	d = length(pri)
 	size(x) == (d, length(w)) || throw(ArgumentError("Inconsistent argument dimensions."))
 	a = copy(pri.alpha)
