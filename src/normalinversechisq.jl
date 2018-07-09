@@ -78,4 +78,4 @@ function mode(d::NormalInverseChisq)
     return μ, σ2
 end
 
-rand(d::NormalInverseChisq) = rand(NormalInverseGamma(d))
+rand(d::NormalInverseChisq) = rand(convert(NormalInverseGamma, d))

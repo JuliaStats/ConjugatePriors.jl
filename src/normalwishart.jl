@@ -34,7 +34,7 @@ end
 
 function NormalWishart(mu::Vector{T}, kappa::T,
                        Tmat::Matrix{T}, nu::T) where T<:Real
-    NormalWishart{T}(mu, kappa, cholfact(Tmat), nu)
+    NormalWishart{T}(mu, kappa, cholesky(Tmat), nu)
 end
 
 function insupport(::Type{NormalWishart}, x::Vector{T}, Lam::Matrix{T}) where T<:Real
@@ -69,7 +69,7 @@ function logpdf(nw::NormalWishart, x::Vector{T}, Lam::Matrix{T}) where T<:Real
 
         # Wishart (MvNormal contributes 0.5 as well)
         logp += (hnu - hp) * logdet(Lam)
-        logp -= 0.5 * trace(Tchol \ Lam)
+        logp -= 0.5 * tr(Tchol \ Lam)
 
         # Normal
         z = nw.zeromean ? x : x - mu

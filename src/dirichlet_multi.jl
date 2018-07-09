@@ -26,7 +26,7 @@ posterior_canon(pri::Dirichlet, ss::MultinomialStats) = DirichletCanon(pri.alpha
 function posterior_canon(pri::Dirichlet, G::Type{Multinomial}, x::Matrix{T}) where T<:Real
 	d = length(pri)
 	size(x,1) == d || throw(ArgumentError("Inconsistent argument dimensions."))
-	a = add!(sum(x, 2), pri.alpha)
+	a = add!(sum(x, dims=2), pri.alpha)
 	DirichletCanon(vec(a))
 end
 
@@ -34,7 +34,7 @@ function posterior_canon(pri::Dirichlet, G::Type{Multinomial}, x::Matrix{T}, w::
 	d = length(pri)
 	size(x) == (d, length(w)) || throw(ArgumentError("Inconsistent argument dimensions."))
 	a = copy(pri.alpha)
-	Base.LinAlg.BLAS.gemv!('N', 1.0, map(Float64, x), vec(w), 1.0, a)
+	BLAS.gemv!('N', 1.0, map(Float64, x), vec(w), 1.0, a)
 	DirichletCanon(a)
 end
 

@@ -1,6 +1,8 @@
 using Compat
 using Compat.Test
 
+using LinearAlgebra
+
 @testset "Conjugate priors" begin
     tests = ["conjugates",
              "conjugates_normal",

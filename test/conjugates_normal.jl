@@ -1,6 +1,8 @@
 using Distributions
 using ConjugatePriors
 
+using Random: srand
+
 using ConjugatePriors: NormalGamma, NormalInverseGamma, NormalInverseChisq
 using ConjugatePriors: posterior, posterior_rand, posterior_mode, posterior_randmodel, fit_map
 
@@ -123,10 +125,10 @@ w = rand(100)
         post = posterior(pri, Normal, x)
         @test isa(post, NormalInverseGamma)
 
-        @test post.mu ≈ (mu0/v0 + n*mean(x))/(1./v0 + n)
-        @test post.v0 ≈ 1./(1./v0 + n)
+        @test post.mu ≈ (mu0/v0 + n*mean(x))/(1.0/v0 + n)
+        @test post.v0 ≈ 1.0/(1.0/v0 + n)
         @test post.shape ≈ shape0 + 0.5*n
-        @test post.scale ≈ scale0 + 0.5*(n-1)*var(x) + n./v0./(n + 1./v0)*0.5*(mean(x)-mu0).^2
+        @test post.scale ≈ scale0 + 0.5*(n-1)*var(x) + n./v0./(n + 1.0/v0)*0.5*(mean(x)-mu0).^2
 
         ps = posterior_randmodel(pri, Normal, x)
 
@@ -154,9 +156,9 @@ w = rand(100)
         ν0 = 10.0
 
         pri = NormalInverseChisq(μ0, σ20, κ0, ν0)
-        pri2 = NormalInverseGamma(pri)
+        pri2 = convert(NormalInverseGamma, pri)
 
-        @test NormalInverseChisq(pri2) == pri
+        @test convert(NormalInverseChisq, pri2) == pri
 
         @test mode(pri2) == mode(pri)
         @test mean(pri2) == mean(pri)
@@ -168,7 +170,7 @@ w = rand(100)
         post = posterior(pri, Normal, x)
         post2 = posterior(pri2, Normal, x)
         @test isa(post, NormalInverseChisq)
-        @test NormalInverseChisq(post2) == post
+        @test convert(NormalInverseChisq, post2) == post
 
         for _ in 1:10
             x = rand(post)
@@ -189,7 +191,7 @@ w = rand(100)
 
         mu_true = 2.
         tau2_true = 3.
-        x = rand(Normal(mu_true, 1./tau2_true), n)
+        x = rand(Normal(mu_true, 1.0/tau2_true), n)
 
         mu0 = 2.
         nu0 = 3.

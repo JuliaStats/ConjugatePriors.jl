@@ -35,7 +35,7 @@ end
 function NormalInverseWishart(mu::Vector{U}, kappa::Real,
                               Lambda::Matrix{S}, nu::Real) where {S<:Real, U<:Real}
     T = promote_type(eltype(mu), typeof(kappa), typeof(nu), S)
-    return NormalInverseWishart{T}(Vector{T}(mu), T(kappa), Cholesky{T}(cholfact(Lambda)), T(nu))
+    return NormalInverseWishart{T}(Vector{T}(mu), T(kappa), Cholesky{T}(cholesky(Lambda)), T(nu))
 end
 
 function insupport(::Type{NormalInverseWishart}, x::Vector{T}, Sig::Matrix{T}) where T<:Real
@@ -77,11 +77,11 @@ function logpdf(niw::NormalInverseWishart, x::Vector{T}, Sig::Matrix{T}) where T
         logp::T = hnu * logdet(Lamchol)
         logp -= hnu * p * log(2.)
         logp -= logmvgamma(p, hnu)
-        logp -= hp * (log(2.*pi) - log(kappa))
+        logp -= hp * (log(2.0*pi) - log(kappa))
         
         # Inverse-Wishart
         logp -= (hnu + hp + 1.) * logdet(Sig)
-        logp -= 0.5 * trace(Sig \ (Lamchol[:U]' * Lamchol[:U]))
+        logp -= 0.5 * tr(Sig \ Matrix(Lamchol))
         
         # Normal
         z = niw.zeromean ? x : x - mu

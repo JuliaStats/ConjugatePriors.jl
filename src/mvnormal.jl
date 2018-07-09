@@ -83,11 +83,11 @@ function posterior_canon(prior::NormalInverseWishart, ss::MvNormalStats)
     mu = (kappa0.*mu0 + ss.s) ./ kappa
     nu = nu0 + ss.tw
 
-    Lam0 = LamC0[:U]'*LamC0[:U]
+    Lam0 = Matrix(LamC0)
     z = prior.zeromean ? ss.m : ss.m - mu0
     Lam = Lam0 + ss.s2 + kappa0*ss.tw/kappa*(z*z')
 
-    return NormalInverseWishart(mu, kappa, cholfact(Lam), nu)
+    return NormalInverseWishart(mu, kappa, cholesky(Lam), nu)
 end
 
 const MeanAndCovMat = Tuple{Vector{Float64}, Matrix{Float64}}
@@ -106,11 +106,11 @@ function posterior_canon(prior::NormalWishart, ss::MvNormalStats)
     nu = nu0 + ss.tw
     mu = (kappa0.*mu0 + ss.s) ./ kappa
 
-    Lam0 = TC0[:U]'*TC0[:U]
+    Lam0 = Matrix(TC0)
     z = prior.zeromean ? ss.m : ss.m - mu0
     Lam = Lam0 + ss.s2 + kappa0*ss.tw/kappa*(z*z')
 
-    return NormalWishart(mu, kappa, cholfact(Lam), nu)
+    return NormalWishart(mu, kappa, cholesky(Lam), nu)
 end
 
 complete(G::Type{MvNormal}, pri::NormalWishart, s::MeanAndCovMat) = MvNormal(s[1], inv(PDMat(s[2])))

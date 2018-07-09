@@ -31,11 +31,11 @@ insupport(::Type{NormalGamma}, x::T, tau2::T) where T<:Real =
 
 # Probably should guard agains dividing by and taking the log of 0.
 function pdf(d::NormalGamma, x::T, tau2::T) where T<:Real
-    Zinv = d.rate.^d.shape / gamma(d.shape) * sqrt(d.nu / (2.*pi))
-    return Zinv * tau2.^(d.shape-0.5) * exp(-0.5*tau2*(d.nu*(x-d.mu).^2 + 2.*d.rate))
+    Zinv = d.rate.^d.shape / gamma(d.shape) * sqrt(d.nu / (2.0*pi))
+    return Zinv * tau2.^(d.shape-0.5) * exp(-0.5*tau2*(d.nu*(x-d.mu).^2 + 2.0*d.rate))
 end
 function logpdf(d::NormalGamma, x::T, tau2::T) where T<:Real
-    lZinv = d.shape*log(d.rate) - lgamma(d.shape) + 0.5*(log(d.nu) - log(2.*pi))
+    lZinv = d.shape*log(d.rate) - lgamma(d.shape) + 0.5*(log(d.nu) - log(2.0*pi))
     return lZinv + (d.shape-0.5)*log(tau2) - 0.5*tau2*(d.nu*(x-d.mu).^2 + 2*d.rate)
 end
 
@@ -45,6 +45,6 @@ function rand(d::NormalGamma)
     if tau2 <= zero(Float64)
         tau2 = eps(Float64)
     end
-    mu = rand(Normal(d.mu, sqrt(1./(tau2*d.nu))))
+    mu = rand(Normal(d.mu, sqrt(1.0/(tau2*d.nu))))
     return mu, tau2
 end
