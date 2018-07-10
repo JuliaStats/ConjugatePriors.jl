@@ -139,7 +139,7 @@ end
     x = rand(Multinomial(10, [0.2, 0.3, 0.5]), n)
     p = posterior(pri, Multinomial, x)
     @test isa(p, Dirichlet)
-    @test p.alpha ≈ pri.alpha + vec(sum(x, 2))
+    @test p.alpha ≈ pri.alpha + vec(sum(x, dims=2))
 
     r = posterior_mode(pri, Multinomial, x)
     @test r ≈ mode(p)

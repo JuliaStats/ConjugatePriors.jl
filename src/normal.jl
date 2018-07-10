@@ -101,12 +101,12 @@ function posterior_canon(prior::NormalInverseGamma, ss::NormalStats)
     # ss.tw contains the number of observations if weight wasn't used to
     # compute the sufficient statistics.
 
-    vn_inv = 1./v0 + ss.tw
+    vn_inv = 1.0/v0 + ss.tw
     mu = (mu0/v0 + ss.s) / vn_inv  # ss.s = ss.tw*ss.m = n*xbar
     shape = shape0 + 0.5*ss.tw
     scale = scale0 + 0.5*ss.s2 + 0.5/(vn_inv*v0)*ss.tw*(ss.m-mu0).^2
 
-    return NormalInverseGamma(mu, 1./vn_inv, shape, scale)
+    return NormalInverseGamma(mu, 1.0/vn_inv, shape, scale)
 end
 
 complete(G::Type{Normal}, pri::NormalInverseGamma, t::NTuple{2,Float64}) = Normal(t[1], sqrt(t[2]))

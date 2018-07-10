@@ -32,8 +32,8 @@ insupport(::Type{NormalInverseGamma}, x::T, sig2::T) where T<:Real =
 # Probably should guard agains dividing by and taking the log of 0.
 
 function pdf(d::NormalInverseGamma, x::T, sig2::T) where T<:Real
-    Zinv = d.scale.^d.shape / gamma(d.shape) / sqrt(d.v0 * 2.*pi)
-    return Zinv * 1./(sqrt(sig2)*sig2.^(d.shape+1.)) * exp(-d.scale/sig2 - 0.5/(sig2*d.v0)*(x-d.mu).^2)
+    Zinv = d.scale.^d.shape / gamma(d.shape) / sqrt(d.v0 * 2.0*pi)
+    return Zinv * 1.0/(sqrt(sig2)*sig2.^(d.shape+1.0)) * exp(-d.scale/sig2 - 0.5/(sig2*d.v0)*(x-d.mu).^2)
 end
 
 function logpdf(d::NormalInverseGamma, x::T, sig2::T) where T<:Real

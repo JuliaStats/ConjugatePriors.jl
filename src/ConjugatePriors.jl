@@ -2,12 +2,17 @@ __precompile__()
 
 module ConjugatePriors
 
+using Statistics
+using LinearAlgebra
+
 using PDMats
 using Distributions
 using StatsFuns
+using SpecialFunctions
 
-import Base: mean
-import Base.LinAlg: Cholesky
+
+import Statistics: mean
+import LinearAlgebra: Cholesky
 
 import PDMats: PDMat
 
