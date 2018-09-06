@@ -1,7 +1,7 @@
 using Distributions
 using ConjugatePriors
 
-using Random: srand
+using Random: seed!
 
 using ConjugatePriors: NormalGamma, NormalInverseGamma, NormalInverseChisq
 using ConjugatePriors: posterior, posterior_rand, posterior_mode, posterior_randmodel, fit_map
@@ -164,7 +164,7 @@ w = rand(100)
         @test mean(pri2) == mean(pri)
         @test pdf(pri, mu_true, sig2_true) == pdf(pri2, mu_true, sig2_true)
         
-        @test (srand(1); rand(pri)) == (srand(1); rand(pri2))
+        @test (seed!(1); rand(pri)) == (seed!(1); rand(pri2))
 
         # check that updating is consistent between NIχ2 and NIG
         post = posterior(pri, Normal, x)
