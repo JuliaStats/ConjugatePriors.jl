@@ -51,6 +51,22 @@ import Distributions:
     isApproxSymmmetric,
     hasCholesky
 
+export
+    # conjugate prior distributions defined here
+    NormalInverseChisq,
+    NormalGamma,
+    NormalInverseGamma,
+    NormalWishart,
+    NormalInverseWishart,
+
+    # inteface
+    posterior,
+    posterior_canon,
+    posterior_rand,
+    posterior_rand!,
+    posterior_randmodel,
+    posterior_mode,
+    fit_map
 
 include("fallbacks.jl")
 include("beta_binom.jl")
