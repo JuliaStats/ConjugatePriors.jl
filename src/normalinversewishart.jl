@@ -38,7 +38,7 @@ function NormalInverseWishart(mu::AbstractVector{U}, kappa::Real,
     return NormalInverseWishart{T}(AbstractVector{T}(mu), T(kappa), Cholesky{T}(cholesky(Lambda)), T(nu))
 end
 
-function insupport(::Type{NormalInverseWishart}, x::AbstractVector{T}, Sig::Matrix{T}) where T<:Real
+function insupport(::Type{NormalInverseWishart}, x::AbstractVector{T}, Sig::AbstractMatrix{T}) where T<:Real
     return (all(isfinite, x) &&
            size(Sig, 1) == size(Sig, 2) &&
            isApproxSymmmetric(Sig) &&
@@ -57,10 +57,10 @@ The parameters are
 """
 params(niw::NormalInverseWishart) = (niw.mu, niw.Lamchol, niw.kappa, niw.nu)
 
-pdf(niw::NormalInverseWishart, x::AbstractVector{T}, Sig::Matrix{T}) where T<:Real =
+pdf(niw::NormalInverseWishart, x::AbstractVector{T}, Sig::AbstractMatrix{T}) where T<:Real =
         exp(logpdf(niw, x, Sig))
 
-function logpdf(niw::NormalInverseWishart, x::AbstractVector{T}, Sig::Matrix{T}) where T<:Real
+function logpdf(niw::NormalInverseWishart, x::AbstractVector{T}, Sig::AbstractMatrix{T}) where T<:Real
     if !insupport(NormalInverseWishart, x, Sig)
         return -Inf
     else
@@ -81,7 +81,7 @@ function logpdf(niw::NormalInverseWishart, x::AbstractVector{T}, Sig::Matrix{T})
 
         # Inverse-Wishart
         logp -= (hnu + hp + 1.) * logdet(Sig)
-        logp -= 0.5 * tr(Sig \ Matrix(Lamchol))
+        logp -= 0.5 * tr(Sig \ AbstractMatrix(Lamchol))
 
         # Normal
         z = niw.zeromean ? x : x - mu
