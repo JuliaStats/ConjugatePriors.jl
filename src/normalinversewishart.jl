@@ -6,12 +6,12 @@
 struct NormalInverseWishart{T<:Real} <: ContinuousUnivariateDistribution
     dim::Int
     zeromean::Bool
-    mu::Vector{T}
+    mu::AbstractVector{T}
     kappa::T              # This scales precision (inverse covariance)
     Lamchol::Cholesky{T}  # Covariance matrix (well, sqrt of one)
     nu::T
 
-    function NormalInverseWishart{T}(mu::Vector{T}, kappa::T,
+    function NormalInverseWishart{T}(mu::AbstractVector{T}, kappa::T,
                                   Lamchol::Cholesky{T}, nu::T) where T<:Real
         # Probably should put some error checking in here
         d = length(mu)
@@ -26,19 +26,19 @@ struct NormalInverseWishart{T<:Real} <: ContinuousUnivariateDistribution
     end
 end
 
-function NormalInverseWishart(mu::Vector{U}, kappa::Real,
+function NormalInverseWishart(mu::AbstractVector{U}, kappa::Real,
                                 Lamchol::Cholesky{S}, nu::Real) where {S<:Real, U<:Real}
     T = promote_type(eltype(mu), typeof(kappa), typeof(nu), S)
-    return NormalInverseWishart{T}(Vector{T}(mu), T(kappa), Cholesky{T}(Lamchol), T(nu))
+    return NormalInverseWishart{T}(AbstractVector{T}(mu), T(kappa), Cholesky{T}(Lamchol), T(nu))
 end
 
-function NormalInverseWishart(mu::Vector{U}, kappa::Real,
+function NormalInverseWishart(mu::AbstractVector{U}, kappa::Real,
                               Lambda::Matrix{S}, nu::Real) where {S<:Real, U<:Real}
     T = promote_type(eltype(mu), typeof(kappa), typeof(nu), S)
-    return NormalInverseWishart{T}(Vector{T}(mu), T(kappa), Cholesky{T}(cholesky(Lambda)), T(nu))
+    return NormalInverseWishart{T}(AbstractVector{T}(mu), T(kappa), Cholesky{T}(cholesky(Lambda)), T(nu))
 end
 
-function insupport(::Type{NormalInverseWishart}, x::Vector{T}, Sig::Matrix{T}) where T<:Real
+function insupport(::Type{NormalInverseWishart}, x::AbstractVector{T}, Sig::Matrix{T}) where T<:Real
     return (all(isfinite, x) &&
            size(Sig, 1) == size(Sig, 2) &&
            isApproxSymmmetric(Sig) &&
@@ -50,17 +50,17 @@ end
     params(niw::NormalInverseWishart)
 
 The parameters are
-* μ::Vector{T<:Real} the expected mean vector
+* μ::AbstractVector{T<:Real} the expected mean vector
 * Λchol::Cholesky{T<:Real} the Cholesky decomposition of the scale matrix
 * κ::T<:Real prior pseudocount for the mean
 * ν::T<:Real prior pseudocount for the covariance
 """
 params(niw::NormalInverseWishart) = (niw.mu, niw.Lamchol, niw.kappa, niw.nu)
 
-pdf(niw::NormalInverseWishart, x::Vector{T}, Sig::Matrix{T}) where T<:Real =
+pdf(niw::NormalInverseWishart, x::AbstractVector{T}, Sig::Matrix{T}) where T<:Real =
         exp(logpdf(niw, x, Sig))
 
-function logpdf(niw::NormalInverseWishart, x::Vector{T}, Sig::Matrix{T}) where T<:Real
+function logpdf(niw::NormalInverseWishart, x::AbstractVector{T}, Sig::Matrix{T}) where T<:Real
     if !insupport(NormalInverseWishart, x, Sig)
         return -Inf
     else

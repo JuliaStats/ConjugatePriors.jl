@@ -83,7 +83,7 @@ function posterior_canon(prior::NormalInverseWishart, ss::MvNormalStats)
     mu = (kappa0.*mu0 + ss.s) ./ kappa
     nu = nu0 + ss.tw
 
-    Lam0 = Matrix(LamC0)
+    Lam0 = AbstractMatrix(LamC0)
     z = prior.zeromean ? ss.m : ss.m - mu0
     Lam = Lam0 + ss.s2 + kappa0*ss.tw/kappa*(z*z')
 
@@ -106,7 +106,7 @@ function posterior_canon(prior::NormalWishart, ss::MvNormalStats)
     nu = nu0 + ss.tw
     mu = (kappa0.*mu0 + ss.s) ./ kappa
 
-    Lam0 = Matrix(TC0)
+    Lam0 = AbstractMatrix(TC0)
     z = prior.zeromean ? ss.m : ss.m - mu0
     Lam = Lam0 + ss.s2 + kappa0*ss.tw/kappa*(z*z')
 
