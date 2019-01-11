@@ -26,14 +26,14 @@ struct NormalWishart{T<:Real,V<:AbstractVector{T},M<:AbstractMatrix{T}} <: Conti
     end
 end
 
-function NormalWishart(mu::Vector{U}, kappa::Real,
+function NormalWishart(mu::AbstractVector{U}, kappa::Real,
                        Tchol::Cholesky{S}, nu::Real) where {S<:Real, U<:Real}
     T = promote_type(U,S,typeof(kappa), typeof(nu))
-    return NormalWishart{T}(Vector{T}(mu),T(kappa),Cholesky{T}(Tchol), T(nu))
+    return NormalWishart{T}(convert(AbstractVector{T}, mu),T(kappa),Cholesky{T}(Tchol), T(nu))
 end
 
-function NormalWishart(mu::Vector{T}, kappa::T,
-                       Tmat::Matrix{T}, nu::T) where T<:Real
+function NormalWishart(mu::AbstractVector{T}, kappa::T,
+                       Tmat::AbstractMatrix{T}, nu::T) where T<:Real
     NormalWishart{T}(mu, kappa, cholesky(Tmat), nu)
 end
 
