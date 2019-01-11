@@ -3,16 +3,16 @@
 # a reference.  Note that there were some typos in that document so the code
 # here may not correspond exactly.
 
-struct NormalInverseWishart{T<:Real} <: ContinuousUnivariateDistribution
+struct NormalInverseWishart{T<:Real,V<:AbstractVector{T},M<:AbstractMatrix{T}} <: ContinuousUnivariateDistribution
     dim::Int
     zeromean::Bool
-    mu::AbstractVector{T}
+    mu::V
     kappa::T              # This scales precision (inverse covariance)
-    Lamchol::Cholesky{T}  # Covariance matrix (well, sqrt of one)
+    Lamchol::Cholesky{T,M}  # Covariance matrix (well, sqrt of one)
     nu::T
 
     function NormalInverseWishart{T}(mu::AbstractVector{T}, kappa::T,
-                                  Lamchol::Cholesky{T}, nu::T) where T<:Real
+                                     Lamchol::Cholesky{T,M}, nu::T) where {T<:Real, M<:AbstractMatrix{T}}
         # Probably should put some error checking in here
         d = length(mu)
         zmean::Bool = true
@@ -22,7 +22,7 @@ struct NormalInverseWishart{T<:Real} <: ContinuousUnivariateDistribution
                 break
             end
         end
-        new(d, zmean, mu, T(kappa), Lamchol, T(nu))
+        new{T,typeof(mu),M}(d, zmean, mu, T(kappa), Lamchol, T(nu))
     end
 end
 
@@ -33,7 +33,7 @@ function NormalInverseWishart(mu::AbstractVector{U}, kappa::Real,
 end
 
 function NormalInverseWishart(mu::AbstractVector{U}, kappa::Real,
-                              Lambda::Matrix{S}, nu::Real) where {S<:Real, U<:Real}
+                              Lambda::AbstractMatrix{S}, nu::Real) where {S<:Real, U<:Real}
     T = promote_type(eltype(mu), typeof(kappa), typeof(nu), S)
     return NormalInverseWishart{T}(AbstractVector{T}(mu), T(kappa), Cholesky{T}(cholesky(Lambda)), T(nu))
 end
@@ -72,20 +72,20 @@ function logpdf(niw::NormalInverseWishart, x::AbstractVector{T}, Sig::Matrix{T})
         Lamchol = niw.Lamchol
         hnu = 0.5 * nu
         hp = 0.5 * p
-    
+
         # Normalization
         logp::T = hnu * logdet(Lamchol)
         logp -= hnu * p * log(2.)
         logp -= logmvgamma(p, hnu)
         logp -= hp * (log(2.0*pi) - log(kappa))
-        
+
         # Inverse-Wishart
         logp -= (hnu + hp + 1.) * logdet(Sig)
         logp -= 0.5 * tr(Sig \ Matrix(Lamchol))
-        
+
         # Normal
         z = niw.zeromean ? x : x - mu
-        logp -= 0.5 * kappa * invquad(PDMat(Sig), z) 
+        logp -= 0.5 * kappa * invquad(PDMat(Sig), z)
 
         return logp
 
@@ -97,4 +97,3 @@ function rand(niw::NormalInverseWishart)
     mu = rand(MvNormal(niw.mu, Sig ./ niw.kappa))
     return (mu, Sig)
 end
-

@@ -3,16 +3,16 @@
 # a reference.  Note that there were some typos in that document so the code
 # here may not correspond exactly.
 
-struct NormalWishart{T<:Real} <: ContinuousMultivariateDistribution
+struct NormalWishart{T<:Real,V<:AbstractVector{T},M<:AbstractMatrix{T}} <: ContinuousMultivariateDistribution
     dim::Int
     zeromean::Bool
-    mu::Vector{T}
+    mu::V
     kappa::T
-    Tchol::Cholesky{T}  # Precision matrix (well, sqrt of one)
+    Tchol::Cholesky{T,M}  # Precision matrix (well, sqrt of one)
     nu::T
 
-    function NormalWishart{T}(mu::Vector{T}, kappa::T,
-                                  Tchol::Cholesky{T}, nu::T) where T<:Real
+    function NormalWishart{T}(mu::AbstractVector{T}, kappa::T,
+                              Tchol::Cholesky{T,M}, nu::T) where {T<:Real, M<:AbstractMatrix{T}}
         # Probably should put some error checking in here
         d = length(mu)
         zmean::Bool = true
@@ -22,12 +22,12 @@ struct NormalWishart{T<:Real} <: ContinuousMultivariateDistribution
                 break
             end
         end
-        new(d, zmean, mu, T(kappa), Tchol, T(nu))
+        new{T,typeof(mu),M}(d, zmean, mu, T(kappa), Tchol, T(nu))
     end
 end
 
 function NormalWishart(mu::Vector{U}, kappa::Real,
-                                Tchol::Cholesky{S}, nu::Real) where {S<:Real, U<:Real}
+                       Tchol::Cholesky{S}, nu::Real) where {S<:Real, U<:Real}
     T = promote_type(U,S,typeof(kappa), typeof(nu))
     return NormalWishart{T}(Vector{T}(mu),T(kappa),Cholesky{T}(Tchol), T(nu))
 end
