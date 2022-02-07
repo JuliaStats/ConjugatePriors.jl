@@ -49,7 +49,7 @@ function insupport(::Type{NormalInverseWishart}, x::AbstractVector{T}, Sig::Abst
            size(Sig, 1) == size(Sig, 2) &&
            isApproxSymmmetric(Sig) &&
            size(Sig, 1) == length(x) &&
-           hasCholesky(Sig))
+           has_cholesky(Sig))
 end
 
 """

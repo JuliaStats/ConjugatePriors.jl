@@ -8,7 +8,8 @@ function posterior_canon(prior::MvNormal, ss::MvNormalKnownCovStats)
     invΣ0 = inv(prior.Σ)
     μ0 = prior.μ
     invΣp = pdadd(invΣ0, ss.invΣ, ss.tw)
-    h = add!(invΣ0 * μ0, ss.invΣ * ss.sx)
+    h = invΣ0 * μ0 
+    h .+= ss.invΣ * ss.sx
 	return MvNormalCanon(h, invΣp)
 end
 

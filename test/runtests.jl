@@ -1,6 +1,4 @@
-using Compat
-using Compat.Test
-
+using Test
 using LinearAlgebra
 
 @testset "Conjugate priors" begin

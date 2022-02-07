@@ -2,12 +2,19 @@ module ConjugatePriors
 
 using Statistics
 using LinearAlgebra
+has_cholesky(a::AbstractMatrix) = isa(try_cholesky(a), Cholesky)
+function try_cholesky(a::AbstractMatrix)
+    try cholesky(a)
+    catch e
+        return e
+   end
+end
 
 using PDMats
 using Distributions
 using StatsFuns
 using SpecialFunctions
-
+lgamma(x) = (logabsgamma(x))[1]
 
 import Statistics: mean
 import LinearAlgebra: Cholesky
@@ -46,8 +53,7 @@ import Distributions:
     pdf,
     logpdf,
     params,
-    isApproxSymmmetric,
-    hasCholesky
+    isApproxSymmmetric
 
 export
     # conjugate prior distributions defined here
