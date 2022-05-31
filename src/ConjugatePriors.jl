@@ -2,13 +2,6 @@ module ConjugatePriors
 
 using Statistics
 using LinearAlgebra
-has_cholesky(a::AbstractMatrix) = isa(try_cholesky(a), Cholesky)
-function try_cholesky(a::AbstractMatrix)
-    try cholesky(a)
-    catch e
-        return e
-   end
-end
 
 using PDMats
 using Distributions
