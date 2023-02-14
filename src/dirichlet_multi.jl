@@ -41,4 +41,6 @@ end
 
 # missing method
 posterior(pri::Dirichlet, G::IncompleteFormulation, x) = convert(typeof(pri), posterior_canon(pri, G, x))
-posterior(pri::Dirichlet, G::IncompleteFormulation, x, w) = convert(typeof(pri), posterior_canon(pri, G, x, w))
+function posterior(pri::Dirichlet{T}, G::IncompleteFormulation, x, w) where {T<:Real}
+    return convert(Dirichlet{T}, posterior_canon(pri, G, x, w))
+end
