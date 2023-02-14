@@ -40,7 +40,9 @@ function posterior_canon(pri::Dirichlet, G::Type{Multinomial}, x::Matrix{T}, w::
 end
 
 # missing method
-posterior(pri::Dirichlet, G::IncompleteFormulation, x) = convert(typeof(pri), posterior_canon(pri, G, x))
+function posterior(pri::Dirichlet{T}, G::IncompleteFormulation, x) where {T<:Real}
+    return convert(Dirichlet{T}, posterior_canon(pri, G, x))
+end
 function posterior(pri::Dirichlet{T}, G::IncompleteFormulation, x, w) where {T<:Real}
     return convert(Dirichlet{T}, posterior_canon(pri, G, x, w))
 end
