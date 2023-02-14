@@ -7,7 +7,7 @@ using PDMats
 using Distributions
 using StatsFuns
 using SpecialFunctions
-
+lgamma(x) = (logabsgamma(x))[1]
 
 import Statistics: mean
 import LinearAlgebra: Cholesky
@@ -46,8 +46,7 @@ import Distributions:
     pdf,
     logpdf,
     params,
-    isApproxSymmmetric,
-    hasCholesky
+    isApproxSymmmetric
 
 export
     # conjugate prior distributions defined here

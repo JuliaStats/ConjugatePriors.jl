@@ -42,7 +42,7 @@ function insupport(::Type{NormalWishart}, x::Vector{T}, Lam::Matrix{T}) where T<
            size(Lam, 1) == size(Lam, 2) &&
            isApproxSymmmetric(Lam) &&
            size(Lam, 1) == length(x) &&
-           hasCholesky(Lam))
+           isposdef(Lam))
 end
 
 pdf(nw::NormalWishart, x::Vector{T}, Lam::Matrix{S}) where T<:Real where S<:Real =
